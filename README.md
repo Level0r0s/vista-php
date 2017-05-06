@@ -8,7 +8,9 @@ Vista Basic's language is modelled after Visual Basic for Applications (VBA) wit
 There is a built-in VB editor included (based on Microsoft's Monaco editor) and you can use any VBA-compatible editor (Visual Studio Code, Sublime Text, etc) on the desktop for code editing.
 
 This framework uses:
+
 -- Qooxdoo for the UI (https://github.com/qooxdoo/qooxdoo)
+
 -- CodeIgiter for the server https://github.com/bcit-ci/CodeIgniter
 
 The code is under active development.
