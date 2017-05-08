@@ -36,36 +36,42 @@ class runtime_StdFunctions extends runtime_UiFunctions {
 			$obj = $this->dimensionButton($name);
 		}break;
 		case 4:{
-			$obj = $this->dimensionDatabase($name);
+			$obj = $this->dimensionCanvas($name);
 		}break;
 		case 5:{
-			$obj = $this->dimensionFormPanel($name);
+			$obj = $this->dimensionDatabase($name);
 		}break;
 		case 6:{
-			$obj = $this->dimensionHSplitPanel($name);
+			$obj = $this->dimensionFormPanel($name);
 		}break;
 		case 7:{
-			$obj = $this->dimensionListPanel($name);
+			$obj = $this->dimensionHSplitPanel($name);
 		}break;
 		case 8:{
-			$obj = $this->dimensionRichEditor($name);
+			$obj = $this->dimensionListPanel($name);
 		}break;
 		case 9:{
-			$obj = $this->dimensionTabPanel($name);
+			$obj = $this->dimensionRichEditor($name);
 		}break;
 		case 10:{
-			$obj = $this->dimensionTextArea($name);
+			$obj = $this->dimensionTabPage($name);
 		}break;
 		case 11:{
-			$obj = $this->dimensionTextField($name);
+			$obj = $this->dimensionTabPanel($name);
 		}break;
 		case 12:{
-			$obj = $this->dimensionWindow($name);
+			$obj = $this->dimensionTextArea($name);
 		}break;
 		case 13:{
-			$obj = $this->dimensionViewport($name);
+			$obj = $this->dimensionTextField($name);
 		}break;
 		case 14:{
+			$obj = $this->dimensionWindow($name);
+		}break;
+		case 15:{
+			$obj = $this->dimensionViewport($name);
+		}break;
+		case 16:{
 			$obj = $this->dimensionVSplitPanel($name);
 		}break;
 		default:{
@@ -105,12 +111,12 @@ class runtime_StdFunctions extends runtime_UiFunctions {
 		$this->push($arg1 >= $arg2);
 	}
 	public function jmp($n) {
-		$this->hgoto($this->index + $n);
+		$this->hgoto($this->pc + $n);
 	}
 	public function jmpIfFalse($n) {
 		$val = $this->pop();
 		if(!$val) {
-			$this->hgoto($this->index + $n);
+			$this->hgoto($this->pc + $n);
 		}
 	}
 	public function lt() {

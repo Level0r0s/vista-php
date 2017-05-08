@@ -5,18 +5,18 @@ class runtime_ProcessBase {
 	public function __construct($bytecodes, $literals) {
 		if(!php_Boot::$skip_constructor) {
 		$this->bytecodes = $bytecodes;
-		$this->index = 0;
 		$this->iterations = 0;
 		$this->literals = $literals;
 		$this->output = (new _hx_array(array()));
+		$this->pc = 0;
 		$this->returnStack = (new _hx_array(array()));
 		$this->stack = (new _hx_array(array()));
 	}}
 	public $bytecodes;
-	public $index;
 	public $iterations;
 	public $literals;
 	public $output;
+	public $pc;
 	public $returnStack;
 	public $stack;
 	public function actionOutput($object, $action, $args, $afterAppear = null) {
@@ -27,7 +27,7 @@ class runtime_ProcessBase {
 		$this->pushOutput($payload);
 	}
 	public function hgoto($n) {
-		$this->index = $n;
+		$this->pc = $n;
 	}
 	public function literal($index) {
 		return $this->literals[$index];
@@ -66,7 +66,7 @@ class runtime_ProcessBase {
 		$this->output->push($val);
 	}
 	public function pushReturn() {
-		$this->returnStack->push($this->index);
+		$this->returnStack->push($this->pc);
 	}
 	public function serviceOutput($service, $args) {
 		$payload = _hx_anonymous(array("service" => $service, "args" => $args));

@@ -34,7 +34,7 @@ var Main = function () {
 exports.Main = Main;
 applib.Application.startupFunction = Main.run;
 
-},{"./ui/viewport/viewport":48}],3:[function(require,module,exports){
+},{"./ui/viewport/viewport":59}],3:[function(require,module,exports){
 /// <reference path="../../qkwidgets/types/qooxdoo.d.ts" />
 "use strict";
 
@@ -94,6 +94,18 @@ var Rest = function () {
             var scope = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
 
             this.getInstance().logout(fn, scope);
+        }
+    }, {
+        key: "readFile",
+        value: function readFile(fname, fn) {
+            this.getInstance().readFile(fname, fn);
+        }
+    }, {
+        key: "readFiles",
+        value: function readFiles() {
+            var fn = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+
+            this.getInstance().readFiles(fn);
         }
     }, {
         key: "register",
@@ -187,7 +199,7 @@ var Rest = function () {
         key: "evalScript",
         value: function evalScript(script, fn) {
             var req = this.createGetRequest('index.php/rpc');
-            var data = { script: script };
+            var data = { service: 'basic', script: script };
             this.sendRequest(req, data, fn);
         }
     }, {
@@ -208,6 +220,20 @@ var Rest = function () {
         value: function logout(fn, scope) {
             var req = this.createPostRequest('/logout');
             this.sendRequest(req, null, fn, scope);
+        }
+    }, {
+        key: "readFile",
+        value: function readFile(fname, fn) {
+            var req = this.createGetRequest('index.php/rpc');
+            var data = { service: 'file', method: 'readFile', fname: fname };
+            this.sendRequest(req, data, fn);
+        }
+    }, {
+        key: "readFiles",
+        value: function readFiles(fn) {
+            var req = this.createGetRequest('index.php/rpc');
+            var data = { service: 'file', method: 'readFiles' };
+            this.sendRequest(req, data, fn);
         }
     }, {
         key: "register",
@@ -251,7 +277,7 @@ var Rest = function () {
 
 exports.Rest = Rest;
 
-},{"../constants/qx_constants":8,"../managers/reply_manager":13}],4:[function(require,module,exports){
+},{"../constants/qx_constants":9,"../managers/reply_manager":16}],4:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -274,6 +300,7 @@ exports.DATA_CHANGED_EVENT = 'data_changed';
 exports.RECORD_DELETED_EVENT = 'record_deleted';
 exports.RECORD_SAVED_EVENT = 'record_saved';
 exports.RECORD_UPDATED_EVENT = 'record_updated';
+exports.RESIZE_EVENT = 'resize';
 exports.SESSION_STATE_CHANGED = 'session_state_changed';
 
 },{}],6:[function(require,module,exports){
@@ -301,6 +328,12 @@ exports.MONACO_EDITOR_OFFSET_HEIGHT = 38;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.PAPER_PATH = 'public/paper/index.html';
+
+},{}],9:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
 // events
 exports.APPEAR = 'appear';
 exports.CHANGE_SELECTION = 'changeSelection';
@@ -317,7 +350,7 @@ exports.SUCCESS = 'success';
 exports.SINGLE_SELECTION = 2;
 exports.CSRF_COOKIE = 'XSRF-TOKEN';
 
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -326,7 +359,7 @@ exports.NAVBAR_LOGOUT_TEXT = 'Logout';
 exports.NAVBAR_REGISTER_TEXT = 'Register';
 exports.NAVBAR_SETTINGS_TEXT = 'Settings';
 
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -339,7 +372,7 @@ var SessionState;
 })(SessionState || (SessionState = {}));
 exports.default = SessionState;
 
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -413,7 +446,15 @@ exports.BUTTONBAR_INFO_WARN_COLOR = exports.tbs_brand_warning;
 exports.DEFAULT_WINDOW_HEIGHT_PCT = 0.5;
 exports.DEFAULT_WINDOW_WIDTH_PCT = 0.5;
 
-},{}],12:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.TINYMCE_PATH = 'public/tinymce/index.html';
+exports.TINYMCE_OFFSET_WIDTH = 2;
+exports.TINYMCE_OFFSET_HEIGHT = 38;
+
+},{}],14:[function(require,module,exports){
 "use strict";
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -489,7 +530,65 @@ var BasicManager = function () {
 
 exports.BasicManager = BasicManager;
 
-},{"../api/rest":3,"./service_manager":14}],13:[function(require,module,exports){
+},{"../api/rest":3,"./service_manager":17}],15:[function(require,module,exports){
+"use strict";
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+Object.defineProperty(exports, "__esModule", { value: true });
+/// <reference path="../types/qooxdoo.d.ts" />
+var rest_1 = require("../api/rest");
+
+var FileManager = function () {
+    function FileManager() {
+        _classCallCheck(this, FileManager);
+    }
+
+    _createClass(FileManager, [{
+        key: "read_file",
+        value: function read_file(fname, fn, scope) {
+            rest_1.Rest.readFile(fname, function (reply) {
+                if (fn) fn.call(scope, reply);
+            });
+        }
+    }, {
+        key: "read_files",
+        value: function read_files(fn, scope) {
+            rest_1.Rest.readFiles(function (reply) {
+                if (fn) fn.call(scope, reply);
+            });
+        }
+    }], [{
+        key: "getInstance",
+        value: function getInstance() {
+            if (!this.instance) {
+                this.instance = new FileManager();
+            }
+            return this.instance;
+        }
+    }, {
+        key: "read_file",
+        value: function read_file(fname, fn, scope) {
+            this.getInstance().read_file(fname, fn, scope);
+        }
+    }, {
+        key: "read_files",
+        value: function read_files() {
+            var fn = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+            var scope = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+
+            this.getInstance().read_files(fn, scope);
+        }
+    }]);
+
+    return FileManager;
+}();
+
+exports.FileManager = FileManager;
+
+},{"../api/rest":3}],16:[function(require,module,exports){
 /// <reference path="../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -529,7 +628,7 @@ var ReplyManager = function () {
 
 exports.ReplyManager = ReplyManager;
 
-},{}],14:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 "use strict";
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -537,10 +636,15 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 Object.defineProperty(exports, "__esModule", { value: true });
-/// <reference path="../types/qooxdoo.d.ts" />
-var SplitPanel = qx.ui.splitpane.Pane;
 var TextArea = qx.ui.form.TextArea;
 var abstract_window_1 = require("../ui/windows/abstract_window");
+var hsplit_pane_1 = require("../ui/splitpane/hsplit_pane");
+var monaco_editor_1 = require("../ui/widgets/iframe/monaco_editor");
+var paper_1 = require("../ui/widgets/iframe/paper");
+var vsplit_pane_1 = require("../ui/splitpane/vsplit_pane");
+var tab_page_1 = require("../ui/tabview/tab_page");
+var tab_view_1 = require("../ui/tabview/tab_view");
+var tinymce_1 = require("../ui/widgets/iframe/tinymce");
 
 var ServiceManager = function () {
     _createClass(ServiceManager, null, [{
@@ -641,7 +745,6 @@ var ServiceManager = function () {
             var id = reply.id;
             var action = reply.action;
             var args = this.normalizeArg(reply.args);
-            console.log('service_action', action, args);
             var proxy = this.getProxy(id);
             if (proxy == null) return null;
             var fn = proxy[action];
@@ -651,13 +754,30 @@ var ServiceManager = function () {
     }, {
         key: "service_create",
         value: function service_create(args) {
-            console.log('service_create', args);
             switch (args.xtype) {
                 case 'hsplitpanel':
                     this.service_create_hsplitpanel(args);
                     break;
+                case 'monaco':
+                    this.service_create_monaco(args);
+                    break;
+                case 'paper':
+                    this.service_create_paper(args);
+                    break;
+                case 'tabpage':
+                    this.service_create_tabpage(args);
+                    break;
+                case 'tabview':
+                    this.service_create_tabview(args);
+                    break;
                 case 'textarea':
                     this.service_create_textarea(args);
+                    break;
+                case 'tinymce':
+                    this.service_create_tinymce(args);
+                    break;
+                case 'vsplitpanel':
+                    this.service_create_vsplitpanel(args);
                     break;
                 case 'window':
                     this.service_create_window(args);
@@ -668,8 +788,36 @@ var ServiceManager = function () {
         key: "service_create_hsplitpanel",
         value: function service_create_hsplitpanel(args) {
             var id = args.id;
-            var splitpanel = new SplitPanel('horizontal');
-            this.setProxy(id, splitpanel);
+            var hsplitpanel = new hsplit_pane_1.HSplitPane();
+            this.setProxy(id, hsplitpanel);
+        }
+    }, {
+        key: "service_create_monaco",
+        value: function service_create_monaco(args) {
+            var id = args.id;
+            var monaco = new monaco_editor_1.MonacoEditor();
+            this.setProxy(id, monaco);
+        }
+    }, {
+        key: "service_create_paper",
+        value: function service_create_paper(args) {
+            var id = args.id;
+            var paper = new paper_1.Paper();
+            this.setProxy(id, paper);
+        }
+    }, {
+        key: "service_create_tabpage",
+        value: function service_create_tabpage(args) {
+            var id = args.id;
+            var tabpage = new tab_page_1.TabPage();
+            this.setProxy(id, tabpage);
+        }
+    }, {
+        key: "service_create_tabview",
+        value: function service_create_tabview(args) {
+            var id = args.id;
+            var tabview = new tab_view_1.TabView();
+            this.setProxy(id, tabview);
         }
     }, {
         key: "service_create_textarea",
@@ -677,6 +825,20 @@ var ServiceManager = function () {
             var id = args.id;
             var textarea = new TextArea();
             this.setProxy(id, textarea);
+        }
+    }, {
+        key: "service_create_tinymce",
+        value: function service_create_tinymce(args) {
+            var id = args.id;
+            var tinymce = new tinymce_1.TinyMce();
+            this.setProxy(id, tinymce);
+        }
+    }, {
+        key: "service_create_vsplitpanel",
+        value: function service_create_vsplitpanel(args) {
+            var id = args.id;
+            var vsplitpanel = new vsplit_pane_1.VSplitPane();
+            this.setProxy(id, vsplitpanel);
         }
     }, {
         key: "service_create_window",
@@ -708,7 +870,7 @@ var ServiceManager = function () {
 
 exports.ServiceManager = ServiceManager;
 
-},{"../ui/windows/abstract_window":42}],15:[function(require,module,exports){
+},{"../ui/splitpane/hsplit_pane":22,"../ui/splitpane/vsplit_pane":24,"../ui/tabview/tab_page":25,"../ui/tabview/tab_view":26,"../ui/widgets/iframe/monaco_editor":46,"../ui/widgets/iframe/paper":47,"../ui/widgets/iframe/tinymce":48,"../ui/windows/abstract_window":53}],18:[function(require,module,exports){
 /// <reference path="../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -832,7 +994,7 @@ var SessionManager = function (_qx$core$Object) {
 
 exports.SessionManager = SessionManager;
 
-},{"../api/rest":3,"../constants/event_constants":5,"../constants/session_state":10}],16:[function(require,module,exports){
+},{"../api/rest":3,"../constants/event_constants":5,"../constants/session_state":11}],19:[function(require,module,exports){
 /// <reference path="../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -874,7 +1036,7 @@ var AbstractPanel = function (_Composite) {
 
 exports.AbstractPanel = AbstractPanel;
 
-},{"../../constants/qx_constants":8}],17:[function(require,module,exports){
+},{"../../constants/qx_constants":9}],20:[function(require,module,exports){
 /// <reference path="../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -915,7 +1077,7 @@ var AbstractDesktop = function (_QxDesktop) {
 
 exports.AbstractDesktop = AbstractDesktop;
 
-},{}],18:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 /// <reference path="../../../qkwidgets/types/qooxdoo.d.ts" />
 "use strict";
 
@@ -968,7 +1130,7 @@ var PatternDesktop = function (_abstract_desktop_1$A) {
 
 exports.PatternDesktop = PatternDesktop;
 
-},{"../../constants/image_constants":6,"./abstract_desktop":17}],19:[function(require,module,exports){
+},{"../../constants/image_constants":6,"./abstract_desktop":20}],22:[function(require,module,exports){
 /// <reference path="../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -995,7 +1157,7 @@ var HSplitPane = function (_split_pane_1$SplitPa) {
 
 exports.HSplitPane = HSplitPane;
 
-},{"./split_pane":20}],20:[function(require,module,exports){
+},{"./split_pane":23}],23:[function(require,module,exports){
 /// <reference path="../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -1022,7 +1184,93 @@ var SplitPane = function (_QxSplitPane) {
 
 exports.SplitPane = SplitPane;
 
-},{}],21:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
+/// <reference path="../../types/qooxdoo.d.ts" />
+"use strict";
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var split_pane_1 = require("./split_pane");
+
+var VSplitPane = function (_split_pane_1$SplitPa) {
+    _inherits(VSplitPane, _split_pane_1$SplitPa);
+
+    function VSplitPane() {
+        _classCallCheck(this, VSplitPane);
+
+        return _possibleConstructorReturn(this, (VSplitPane.__proto__ || Object.getPrototypeOf(VSplitPane)).call(this, 'vertical'));
+    }
+
+    return VSplitPane;
+}(split_pane_1.SplitPane);
+
+exports.VSplitPane = VSplitPane;
+
+},{"./split_pane":23}],25:[function(require,module,exports){
+/// <reference path="../../types/qooxdoo.d.ts" />
+"use strict";
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var Dock = qx.ui.layout.Dock;
+var QxPage = qx.ui.tabview.Page;
+
+var TabPage = function (_QxPage) {
+    _inherits(TabPage, _QxPage);
+
+    function TabPage() {
+        _classCallCheck(this, TabPage);
+
+        var _this = _possibleConstructorReturn(this, (TabPage.__proto__ || Object.getPrototypeOf(TabPage)).call(this));
+
+        _this.setLayout(new Dock());
+        _this.setPadding(0);
+        return _this;
+    }
+
+    return TabPage;
+}(QxPage);
+
+exports.TabPage = TabPage;
+
+},{}],26:[function(require,module,exports){
+/// <reference path="../../types/qooxdoo.d.ts" />
+"use strict";
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var QxTabView = qx.ui.tabview.TabView;
+
+var TabView = function (_QxTabView) {
+  _inherits(TabView, _QxTabView);
+
+  function TabView() {
+    _classCallCheck(this, TabView);
+
+    return _possibleConstructorReturn(this, (TabView.__proto__ || Object.getPrototypeOf(TabView)).apply(this, arguments));
+  }
+
+  return TabView;
+}(QxTabView);
+
+exports.TabView = TabView;
+
+},{}],27:[function(require,module,exports){
 /// <reference path="../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -1105,7 +1353,7 @@ var AbstractViewport = function (_Composite) {
 
 exports.AbstractViewport = AbstractViewport;
 
-},{"../desktop/pattern_desktop":18,"./navbar/navbar":22,"./navpanel/abstract_navpanel":26}],22:[function(require,module,exports){
+},{"../desktop/pattern_desktop":21,"./navbar/navbar":28,"./navpanel/abstract_navpanel":32}],28:[function(require,module,exports){
 /// <reference path="../../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -1192,7 +1440,7 @@ var Navbar = function (_Composite) {
 
 exports.Navbar = Navbar;
 
-},{"../../../constants/style_constants":11,"../../../managers/session_manager":15,"./navbar_label":23,"./navbar_login":24,"./navbar_messages":25}],23:[function(require,module,exports){
+},{"../../../constants/style_constants":12,"../../../managers/session_manager":18,"./navbar_label":29,"./navbar_login":30,"./navbar_messages":31}],29:[function(require,module,exports){
 /// <reference path="../../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -1269,7 +1517,7 @@ var NavbarLabel = function (_Composite) {
 
 exports.NavbarLabel = NavbarLabel;
 
-},{"../../../constants/image_constants":6,"../../../constants/style_constants":11}],24:[function(require,module,exports){
+},{"../../../constants/image_constants":6,"../../../constants/style_constants":12}],30:[function(require,module,exports){
 /// <reference path="../../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -1412,7 +1660,7 @@ var NavbarLogin = function (_SplitButton) {
 
 exports.NavbarLogin = NavbarLogin;
 
-},{"../../../constants/image_constants":6,"../../../constants/qx_constants":8,"../../../constants/session_messages":9,"../../../constants/session_state":10,"../../../constants/style_constants":11,"../../../managers/session_manager":15,"../../widgets/menu_button":40,"../../windows/form/session/login_window":44,"../../windows/form/session/register_window":45,"../../windows/form/session/settings_window":46}],25:[function(require,module,exports){
+},{"../../../constants/image_constants":6,"../../../constants/qx_constants":9,"../../../constants/session_messages":10,"../../../constants/session_state":11,"../../../constants/style_constants":12,"../../../managers/session_manager":18,"../../widgets/menu_button":49,"../../windows/form/session/login_window":55,"../../windows/form/session/register_window":56,"../../windows/form/session/settings_window":57}],31:[function(require,module,exports){
 /// <reference path="../../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -1481,7 +1729,7 @@ var NavbarMessages = function (_Composite) {
 
 exports.NavbarMessages = NavbarMessages;
 
-},{"../../../constants/style_constants":11}],26:[function(require,module,exports){
+},{"../../../constants/style_constants":12}],32:[function(require,module,exports){
 /// <reference path="../../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -1563,7 +1811,7 @@ var AbstractNavpanel = function (_abstract_panel_1$Abs) {
 
 exports.AbstractNavpanel = AbstractNavpanel;
 
-},{"../../../constants/session_state":10,"../../../constants/style_constants":11,"../../../managers/session_manager":15,"../../abstract/abstract_panel":16}],27:[function(require,module,exports){
+},{"../../../constants/session_state":11,"../../../constants/style_constants":12,"../../../managers/session_manager":18,"../../abstract/abstract_panel":19}],33:[function(require,module,exports){
 /// <reference path="../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -1576,28 +1824,19 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var Composite = qx.ui.container.Composite;
-var Decorator = qx.ui.decoration.Decorator;
-var HBox = qx.ui.layout.HBox;
 var menubar_button_1 = require("./menubar_button");
-var style_constants = require("../../constants/style_constants");
+var simple_button_bar_1 = require("./simple_button_bar");
 
-var BasicButtonBar = function (_Composite) {
-    _inherits(BasicButtonBar, _Composite);
+var BasicButtonBar = function (_simple_button_bar_1$) {
+    _inherits(BasicButtonBar, _simple_button_bar_1$);
 
     function BasicButtonBar(window) {
         _classCallCheck(this, BasicButtonBar);
 
-        var _this = _possibleConstructorReturn(this, (BasicButtonBar.__proto__ || Object.getPrototypeOf(BasicButtonBar)).call(this, new HBox(5)));
+        var _this = _possibleConstructorReturn(this, (BasicButtonBar.__proto__ || Object.getPrototypeOf(BasicButtonBar)).call(this));
 
         _this.window = window;
-        _this.setPadding(0, 10, 0, 10);
         _this.addButtons();
-        var decorator = new Decorator();
-        decorator.setStyleTop(style_constants.BUTTONBAR_TOP_STYLE);
-        decorator.setColorTop(style_constants.BUTTONBAR_TOP_COLOR);
-        decorator.setWidthTop(style_constants.BUTTONBAR_TOP_WIDTH);
-        _this.setDecorator(decorator);
         return _this;
     }
 
@@ -1620,34 +1859,14 @@ var BasicButtonBar = function (_Composite) {
             var html = this.getButtonHtml(text);
             return new menubar_button_1.MenubarButton(html, fn, this.window);
         }
-    }, {
-        key: "getButtonColor",
-        value: function getButtonColor(btn) {
-            return style_constants.BUTTONBAR_BUTTON_NORMAL_COLOR;
-        }
-    }, {
-        key: "getButtonHtml",
-        value: function getButtonHtml(text) {
-            var btn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
-
-            var color = this.getButtonColor(btn);
-            var style = "color:" + color + ";font-weight:bold;";
-            return "<span style=\"" + style + "\">" + text + "</span>";
-        }
-    }, {
-        key: "setButtonLabel",
-        value: function setButtonLabel(btn, text) {
-            var html = this.getButtonHtml(text, btn);
-            btn.setLabel(html);
-        }
     }]);
 
     return BasicButtonBar;
-}(Composite);
+}(simple_button_bar_1.SimpleButtonBar);
 
 exports.BasicButtonBar = BasicButtonBar;
 
-},{"../../constants/style_constants":11,"./menubar_button":41}],28:[function(require,module,exports){
+},{"./menubar_button":50,"./simple_button_bar":52}],34:[function(require,module,exports){
 /// <reference path="../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -1714,7 +1933,7 @@ var Button = function (_QxButton) {
 
 exports.Button = Button;
 
-},{"../../constants/button_type":4,"../../constants/qx_constants":8,"../../constants/style_constants":11}],29:[function(require,module,exports){
+},{"../../constants/button_type":4,"../../constants/qx_constants":9,"../../constants/style_constants":12}],35:[function(require,module,exports){
 /// <reference path="../../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -1758,7 +1977,7 @@ var CheckBox = function (_QxCheckBox) {
 
 exports.CheckBox = CheckBox;
 
-},{}],30:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 /// <reference path="../../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -1807,7 +2026,7 @@ var DateField = function (_QxDateField) {
 
 exports.DateField = DateField;
 
-},{}],31:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 /// <reference path="../../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -1843,7 +2062,7 @@ var PasswordField = function (_QxPasswordField) {
 
 exports.PasswordField = PasswordField;
 
-},{}],32:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 /// <reference path="../../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -1988,7 +2207,7 @@ var RadioButtonGroup = function (_QxRadioButtonGroup) {
 
 exports.RadioButtonGroup = RadioButtonGroup;
 
-},{}],33:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 /// <reference path="../../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -2024,7 +2243,7 @@ var TextArea = function (_QxTextArea) {
 
 exports.TextArea = TextArea;
 
-},{}],34:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
 /// <reference path="../../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -2060,7 +2279,7 @@ var TextField = function (_QxTextField) {
 
 exports.TextField = TextField;
 
-},{}],35:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 /// <reference path="../../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -2206,7 +2425,7 @@ var AbstractForm = function (_Scroll) {
 
 exports.AbstractForm = AbstractForm;
 
-},{"../fields/check_box":29,"../fields/date_field":30,"../fields/password_field":31,"../fields/radio_button_group":32,"../fields/text_area":33,"../fields/text_field":34}],36:[function(require,module,exports){
+},{"../fields/check_box":35,"../fields/date_field":36,"../fields/password_field":37,"../fields/radio_button_group":38,"../fields/text_area":39,"../fields/text_field":40}],42:[function(require,module,exports){
 /// <reference path="../../../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -2272,7 +2491,7 @@ var LoginForm = function (_abstract_form_1$Abst) {
 
 exports.LoginForm = LoginForm;
 
-},{"../../../../constants/button_type":4,"../../button":28,"../abstract_form":35}],37:[function(require,module,exports){
+},{"../../../../constants/button_type":4,"../../button":34,"../abstract_form":41}],43:[function(require,module,exports){
 /// <reference path="../../../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -2342,7 +2561,170 @@ var RegisterForm = function (_abstract_form_1$Abst) {
 
 exports.RegisterForm = RegisterForm;
 
-},{"../../../../constants/button_type":4,"../../button":28,"../abstract_form":35}],38:[function(require,module,exports){
+},{"../../../../constants/button_type":4,"../../button":34,"../abstract_form":41}],44:[function(require,module,exports){
+/// <reference path="../../types/qooxdoo.d.ts" />
+"use strict";
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var SimpleTableModel = qx.ui.table.model.Simple;
+var Table = qx.ui.table.Table;
+var TableColumnResize = qx.ui.table.columnmodel.Resize;
+var event_constants = require("../../constants/event_constants");
+var qx_constants = require("../../constants/qx_constants");
+
+var GridWidget = function (_Table) {
+    _inherits(GridWidget, _Table);
+
+    function GridWidget(parent) {
+        _classCallCheck(this, GridWidget);
+
+        var custom = {
+            tableColumnModel: function tableColumnModel() {
+                return new TableColumnResize();
+            }
+        };
+
+        var _this = _possibleConstructorReturn(this, (GridWidget.__proto__ || Object.getPrototypeOf(GridWidget)).call(this, null, custom));
+
+        _this.parent = parent;
+        _this.selectedIndex = -1;
+        _this.init(_this.parent.getGridColumnTitles());
+        return _this;
+    }
+
+    _createClass(GridWidget, [{
+        key: "clearData",
+        value: function clearData() {
+            this.selectedIndex = -1;
+            this.table_model.setData([]);
+        }
+    }, {
+        key: "reset",
+        value: function reset() {
+            this.selectedIndex = -1;
+            this.resetSelection();
+        }
+    }, {
+        key: "showData",
+        value: function showData(records) {
+            this.reset();
+            var rows = [];
+            var _iteratorNormalCompletion = true;
+            var _didIteratorError = false;
+            var _iteratorError = undefined;
+
+            try {
+                for (var _iterator = records[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                    var record = _step.value;
+
+                    var row = [];
+                    var _iteratorNormalCompletion2 = true;
+                    var _didIteratorError2 = false;
+                    var _iteratorError2 = undefined;
+
+                    try {
+                        for (var _iterator2 = this.parent.getGridColumnNames()[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+                            var name = _step2.value;
+
+                            row.push(record[name]);
+                        }
+                    } catch (err) {
+                        _didIteratorError2 = true;
+                        _iteratorError2 = err;
+                    } finally {
+                        try {
+                            if (!_iteratorNormalCompletion2 && _iterator2.return) {
+                                _iterator2.return();
+                            }
+                        } finally {
+                            if (_didIteratorError2) {
+                                throw _iteratorError2;
+                            }
+                        }
+                    }
+
+                    rows.push(row);
+                }
+            } catch (err) {
+                _didIteratorError = true;
+                _iteratorError = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion && _iterator.return) {
+                        _iterator.return();
+                    }
+                } finally {
+                    if (_didIteratorError) {
+                        throw _iteratorError;
+                    }
+                }
+            }
+
+            this.table_model.setData(rows);
+        }
+    }, {
+        key: "updateData",
+        value: function updateData(data) {
+            if (this.selectedIndex < 0) return;
+            var row = this.table_model.getData()[this.selectedIndex];
+            if (row[0] != data.id) return;
+            var names = this.parent.getGridColumnNames();
+            for (var i = 0; i < names.length; i++) {
+                row[i] = data[names[i]];
+            }this.table_model.getData()[this.selectedIndex] = row;
+            this.updateContent();
+        }
+    }, {
+        key: "init",
+        value: function init(columnTitles) {
+            var _this2 = this;
+
+            this.isSingleColumn = columnTitles.length == 1;
+            this.table_model = new SimpleTableModel();
+            this.table_model.setColumns(columnTitles);
+            this.setTableModel(this.table_model);
+            this.setShowCellFocusIndicator(false);
+            this.setStatusBarVisible(false);
+            this.getSelectionModel().setSelectionMode(qx_constants.SINGLE_SELECTION);
+            this.getSelectionModel().addListener(qx_constants.CHANGE_SELECTION, function () {
+                _this2.selectedIndex = -1;
+                var ranges = _this2.getSelectionModel().getSelectedRanges();
+                if (ranges.length > 0) {
+                    var index = ranges[0].maxIndex;
+                    _this2.selectedIndex = index;
+                    var row = _this2.table_model.getData()[index];
+                    _this2.parent.showSelection(row[0]);
+                }
+            });
+            var tcm = this.getTableColumnModel();
+            this.resizeBehavior = tcm.getBehavior();
+            this.addListener(event_constants.RESIZE_EVENT, this.onResize, this);
+        }
+    }, {
+        key: "onResize",
+        value: function onResize() {
+            var minWidth = 10;
+            var maxWidth = 50;
+            if (this.isSingleColumn) minWidth = maxWidth = this.getInnerSize()['width'];
+            this.resizeBehavior.setMinWidth(0, minWidth);
+            this.resizeBehavior.setMaxWidth(0, maxWidth);
+        }
+    }]);
+
+    return GridWidget;
+}(Table);
+
+exports.GridWidget = GridWidget;
+
+},{"../../constants/event_constants":5,"../../constants/qx_constants":9}],45:[function(require,module,exports){
 /// <reference path="../../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -2386,6 +2768,18 @@ var AbstractIFrame = function (_QxIFrame) {
             this.onResize(width, height);
         }
     }, {
+        key: "getHeight",
+        value: function getHeight() {
+            var size = this.getInnerSize();
+            if (!size) return 0;else return size.height;
+        }
+    }, {
+        key: "getWidth",
+        value: function getWidth() {
+            var size = this.getInnerSize();
+            if (!size) return 0;else return size.width;
+        }
+    }, {
         key: "onLoad",
         value: function onLoad() {
             this.iframe_window = this.getWindow();
@@ -2404,7 +2798,7 @@ var AbstractIFrame = function (_QxIFrame) {
 
 exports.AbstractIFrame = AbstractIFrame;
 
-},{"../../../constants/qx_constants":8}],39:[function(require,module,exports){
+},{"../../../constants/qx_constants":9}],46:[function(require,module,exports){
 /// <reference path="../../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -2456,7 +2850,168 @@ var MonacoEditor = function (_abstract_iframe_1$Ab) {
 
 exports.MonacoEditor = MonacoEditor;
 
-},{"../../../constants/monaco_editor_constants":7,"./abstract_iframe":38}],40:[function(require,module,exports){
+},{"../../../constants/monaco_editor_constants":7,"./abstract_iframe":45}],47:[function(require,module,exports){
+/// <reference path="../../../types/qooxdoo.d.ts" />
+"use strict";
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var abstract_iframe_1 = require("./abstract_iframe");
+var paper_constants = require("../../../constants/paper_constants");
+
+var Paper = function (_abstract_iframe_1$Ab) {
+    _inherits(Paper, _abstract_iframe_1$Ab);
+
+    function Paper() {
+        _classCallCheck(this, Paper);
+
+        return _possibleConstructorReturn(this, (Paper.__proto__ || Object.getPrototypeOf(Paper)).call(this, paper_constants.PAPER_PATH));
+    }
+
+    _createClass(Paper, [{
+        key: "centerOrigin",
+        value: function centerOrigin() {
+            this.setOrigin(this.getWidth() / 2, this.getHeight() / 2);
+        }
+    }, {
+        key: "clear",
+        value: function clear() {
+            this.project.activeLayer.removeChildren();
+        }
+    }, {
+        key: "onResize",
+        value: function onResize(width, height) {
+            this.showDemo();
+        }
+    }, {
+        key: "setColorRgb",
+        value: function setColorRgb(r, g, b) {
+            if (this.Color) this.color = new this.Color(r, g, b);
+        }
+    }, {
+        key: "setOrigin",
+        value: function setOrigin(x, y) {
+            if (this.Point) this.origin = new this.Point(x, y);
+        }
+    }, {
+        key: "start",
+        value: function start() {
+            this.paper = this.iframe_window.paper;
+            this.project = this.paper.project;
+            this.Color = this.paper.Color;
+            this.Point = this.paper.Point;
+            this.PointText = this.paper.PointText;
+            this.showDemo();
+        }
+    }, {
+        key: "showDemo",
+        value: function showDemo() {
+            if (!this.paper) return;
+            this.centerOrigin();
+            this.clear();
+            var a = void 0;
+            for (a = 0; a < 360; a += 20) {
+                var r = Math.random();
+                var g = Math.random();
+                var b = Math.random() * 255;
+                this.showText("         Vista BASIC", a, r, g, b);
+            }
+        }
+    }, {
+        key: "showText",
+        value: function showText(s, a, r, g, b) {
+            var text = new this.PointText(this.origin);
+            text.fillColor = new this.Color(r, g, b);
+            text.fontSize = 20;
+            text.rotation = a;
+            text.content = s;
+        }
+    }]);
+
+    return Paper;
+}(abstract_iframe_1.AbstractIFrame);
+
+exports.Paper = Paper;
+
+},{"../../../constants/paper_constants":8,"./abstract_iframe":45}],48:[function(require,module,exports){
+/// <reference path="../../../types/qooxdoo.d.ts" />
+"use strict";
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var abstract_iframe_1 = require("./abstract_iframe");
+var tinymce_constants = require("../../../constants/tinymce_constants");
+
+var TinyMce = function (_abstract_iframe_1$Ab) {
+    _inherits(TinyMce, _abstract_iframe_1$Ab);
+
+    function TinyMce() {
+        _classCallCheck(this, TinyMce);
+
+        var _this = _possibleConstructorReturn(this, (TinyMce.__proto__ || Object.getPrototypeOf(TinyMce)).call(this, tinymce_constants.TINYMCE_PATH));
+
+        _this.content = '';
+        return _this;
+    }
+
+    _createClass(TinyMce, [{
+        key: "start",
+        value: function start() {
+            this.tinyMCE = this.iframe_window.tinyMCE;
+            window.tinyMCE = this.tinyMCE;
+            this.editor = this.tinyMCE.activeEditor;
+            window.editor = this.editor;
+            this.setContent(this.content);
+            this.doResize();
+        }
+    }, {
+        key: "getContent",
+        value: function getContent() {
+            if (this.editor) this.content = this.editor.getContent;
+            return this.content;
+        }
+    }, {
+        key: "onResize",
+        value: function onResize(width, height) {
+            if (this.editor) this.resizeEditor(width, height);
+        }
+    }, {
+        key: "resizeEditor",
+        value: function resizeEditor(width, height) {
+            var clientRects = this.editor.contentAreaContainer.getClientRects();
+            var clientRect = clientRects[0];
+            var clientWidth = clientRect.width;
+            var clientHeight = clientRect.height;
+            this.editor.theme.resizeBy(width - clientWidth - tinymce_constants.TINYMCE_OFFSET_WIDTH, height - clientHeight - tinymce_constants.TINYMCE_OFFSET_HEIGHT);
+        }
+    }, {
+        key: "setContent",
+        value: function setContent(content) {
+            this.content = content;
+            if (this.editor) this.editor.setContent(this.content);
+        }
+    }]);
+
+    return TinyMce;
+}(abstract_iframe_1.AbstractIFrame);
+
+exports.TinyMce = TinyMce;
+
+},{"../../../constants/tinymce_constants":13,"./abstract_iframe":45}],49:[function(require,module,exports){
 /// <reference path="../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -2492,7 +3047,7 @@ var MenuButton = function (_QxMenuButton) {
 
 exports.MenuButton = MenuButton;
 
-},{"../../constants/qx_constants":8}],41:[function(require,module,exports){
+},{"../../constants/qx_constants":9}],50:[function(require,module,exports){
 /// <reference path="../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -2529,7 +3084,124 @@ var MenubarButton = function (_QxMenubarButton) {
 
 exports.MenubarButton = MenubarButton;
 
-},{"../../constants/qx_constants":8}],42:[function(require,module,exports){
+},{"../../constants/qx_constants":9}],51:[function(require,module,exports){
+/// <reference path="../../types/qooxdoo.d.ts" />
+"use strict";
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var menubar_button_1 = require("./menubar_button");
+var simple_button_bar_1 = require("./simple_button_bar");
+
+var ScriptBrowserButtonBar = function (_simple_button_bar_1$) {
+    _inherits(ScriptBrowserButtonBar, _simple_button_bar_1$);
+
+    function ScriptBrowserButtonBar(window) {
+        _classCallCheck(this, ScriptBrowserButtonBar);
+
+        var _this = _possibleConstructorReturn(this, (ScriptBrowserButtonBar.__proto__ || Object.getPrototypeOf(ScriptBrowserButtonBar)).call(this));
+
+        _this.window = window;
+        _this.addButtons();
+        return _this;
+    }
+
+    _createClass(ScriptBrowserButtonBar, [{
+        key: "addButtons",
+        value: function addButtons() {
+            this.createButtons();
+            this.add(this.run_btn);
+            this.add(this.clear_btn);
+        }
+    }, {
+        key: "createButtons",
+        value: function createButtons() {
+            this.clear_btn = this.createButton('Clear', this.window.onClear);
+            this.run_btn = this.createButton('Run', this.window.onRun);
+        }
+    }, {
+        key: "createButton",
+        value: function createButton(text, fn) {
+            var html = this.getButtonHtml(text);
+            return new menubar_button_1.MenubarButton(html, fn, this.window);
+        }
+    }]);
+
+    return ScriptBrowserButtonBar;
+}(simple_button_bar_1.SimpleButtonBar);
+
+exports.ScriptBrowserButtonBar = ScriptBrowserButtonBar;
+
+},{"./menubar_button":50,"./simple_button_bar":52}],52:[function(require,module,exports){
+/// <reference path="../../types/qooxdoo.d.ts" />
+"use strict";
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var Composite = qx.ui.container.Composite;
+var Decorator = qx.ui.decoration.Decorator;
+var HBox = qx.ui.layout.HBox;
+var style_constants = require("../../constants/style_constants");
+
+var SimpleButtonBar = function (_Composite) {
+    _inherits(SimpleButtonBar, _Composite);
+
+    function SimpleButtonBar() {
+        _classCallCheck(this, SimpleButtonBar);
+
+        var _this = _possibleConstructorReturn(this, (SimpleButtonBar.__proto__ || Object.getPrototypeOf(SimpleButtonBar)).call(this, new HBox(5)));
+
+        _this.setPadding(0, 10, 0, 10);
+        var decorator = new Decorator();
+        decorator.setStyleTop(style_constants.BUTTONBAR_TOP_STYLE);
+        decorator.setColorTop(style_constants.BUTTONBAR_TOP_COLOR);
+        decorator.setWidthTop(style_constants.BUTTONBAR_TOP_WIDTH);
+        _this.setDecorator(decorator);
+        return _this;
+    }
+
+    _createClass(SimpleButtonBar, [{
+        key: "getButtonColor",
+        value: function getButtonColor(btn) {
+            return style_constants.BUTTONBAR_BUTTON_NORMAL_COLOR;
+        }
+    }, {
+        key: "getButtonHtml",
+        value: function getButtonHtml(text) {
+            var btn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+
+            var color = this.getButtonColor(btn);
+            var style = "color:" + color + ";font-weight:bold;";
+            return "<span style=\"" + style + "\">" + text + "</span>";
+        }
+    }, {
+        key: "setButtonLabel",
+        value: function setButtonLabel(btn, text) {
+            var html = this.getButtonHtml(text, btn);
+            btn.setLabel(html);
+        }
+    }]);
+
+    return SimpleButtonBar;
+}(Composite);
+
+exports.SimpleButtonBar = SimpleButtonBar;
+
+},{"../../constants/style_constants":12}],53:[function(require,module,exports){
 /// <reference path="../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -2640,7 +3312,7 @@ var AbstractWindow = function (_QxWindow) {
 
 exports.AbstractWindow = AbstractWindow;
 
-},{"../../constants/qx_constants":8,"../viewport/abstract_viewport":21}],43:[function(require,module,exports){
+},{"../../constants/qx_constants":9,"../viewport/abstract_viewport":27}],54:[function(require,module,exports){
 /// <reference path="../../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -2691,7 +3363,7 @@ var AbstractFormWindow = function (_abstract_window_1$Ab) {
 
 exports.AbstractFormWindow = AbstractFormWindow;
 
-},{"../../widgets/forms/abstract_form":35,"../abstract_window":42}],44:[function(require,module,exports){
+},{"../../widgets/forms/abstract_form":41,"../abstract_window":53}],55:[function(require,module,exports){
 /// <reference path="../../../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -2749,7 +3421,7 @@ var LoginWindow = function (_abstract_form_window) {
 
 exports.LoginWindow = LoginWindow;
 
-},{"../../../../managers/session_manager":15,"../../../widgets/forms/session/login_form":36,"../abstract_form_window":43}],45:[function(require,module,exports){
+},{"../../../../managers/session_manager":18,"../../../widgets/forms/session/login_form":42,"../abstract_form_window":54}],56:[function(require,module,exports){
 /// <reference path="../../../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -2802,7 +3474,7 @@ var RegisterWindow = function (_abstract_form_window) {
 
 exports.RegisterWindow = RegisterWindow;
 
-},{"../../../../managers/session_manager":15,"../../../widgets/forms/session/register_form":37,"../abstract_form_window":43}],46:[function(require,module,exports){
+},{"../../../../managers/session_manager":18,"../../../widgets/forms/session/register_form":43,"../abstract_form_window":54}],57:[function(require,module,exports){
 /// <reference path="../../../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -2838,7 +3510,7 @@ var SettingsWindow = function (_abstract_form_window) {
 
 exports.SettingsWindow = SettingsWindow;
 
-},{"../abstract_form_window":43}],47:[function(require,module,exports){
+},{"../abstract_form_window":54}],58:[function(require,module,exports){
 "use strict";
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -2852,6 +3524,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 Object.defineProperty(exports, "__esModule", { value: true });
 var abstract_navpanel_1 = require("../../../qkwidgets/ui/viewport/navpanel/abstract_navpanel");
 var editor_window_1 = require("../../windows/iframe/editor_window");
+var script_browser_window_1 = require("../../windows/tools/script_browser_window");
 
 var Navpanel = function (_abstract_navpanel_1$) {
     _inherits(Navpanel, _abstract_navpanel_1$);
@@ -2866,16 +3539,23 @@ var Navpanel = function (_abstract_navpanel_1$) {
         key: "addButtons",
         value: function addButtons() {
             this.monacoEditorBtn = this.addPanelButton('VB Editor', this.onEditor);
+            this.fileBrowserBtn = this.addPanelButton('Script Browser', this.onFileBrowser);
         }
     }, {
         key: "setButtonsEnabled",
         value: function setButtonsEnabled(bool) {
+            this.fileBrowserBtn.setEnabled(bool);
             this.monacoEditorBtn.setEnabled(bool);
         }
     }, {
         key: "onEditor",
         value: function onEditor() {
             new editor_window_1.EditorWindow();
+        }
+    }, {
+        key: "onFileBrowser",
+        value: function onFileBrowser() {
+            new script_browser_window_1.ScriptBrowserWindow();
         }
     }]);
 
@@ -2884,7 +3564,7 @@ var Navpanel = function (_abstract_navpanel_1$) {
 
 exports.Navpanel = Navpanel;
 
-},{"../../../qkwidgets/ui/viewport/navpanel/abstract_navpanel":26,"../../windows/iframe/editor_window":49}],48:[function(require,module,exports){
+},{"../../../qkwidgets/ui/viewport/navpanel/abstract_navpanel":32,"../../windows/iframe/editor_window":60,"../../windows/tools/script_browser_window":61}],59:[function(require,module,exports){
 "use strict";
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -2926,7 +3606,7 @@ var Viewport = function (_abstract_viewport_1$) {
 
 exports.Viewport = Viewport;
 
-},{"../../constants/app_constants":1,"../../qkwidgets/ui/viewport/abstract_viewport":21,"./navpanel/navpanel":47}],49:[function(require,module,exports){
+},{"../../constants/app_constants":1,"../../qkwidgets/ui/viewport/abstract_viewport":27,"./navpanel/navpanel":58}],60:[function(require,module,exports){
 /// <reference path="../../../qkwidgets/types/qooxdoo.d.ts" />
 "use strict";
 
@@ -3026,6 +3706,7 @@ var EditorWindow = function (_abstract_window_1$Ab) {
     }, {
         key: "onShowReply",
         value: function onShowReply(reply) {
+            if (reply === undefined) return;
             var oldText = this.output.getValue();
             if (!oldText) oldText = '';
             var newText = void 0;
@@ -3039,6 +3720,166 @@ var EditorWindow = function (_abstract_window_1$Ab) {
 
 exports.EditorWindow = EditorWindow;
 
-},{"../../../qkwidgets/managers/basic_manager":12,"../../../qkwidgets/ui/splitpane/hsplit_pane":19,"../../../qkwidgets/ui/widgets/basic_button_bar":27,"../../../qkwidgets/ui/widgets/fields/text_area":33,"../../../qkwidgets/ui/widgets/iframe/monaco_editor":39,"../../../qkwidgets/ui/windows/abstract_window":42}]},{},[2])
+},{"../../../qkwidgets/managers/basic_manager":14,"../../../qkwidgets/ui/splitpane/hsplit_pane":22,"../../../qkwidgets/ui/widgets/basic_button_bar":33,"../../../qkwidgets/ui/widgets/fields/text_area":39,"../../../qkwidgets/ui/widgets/iframe/monaco_editor":46,"../../../qkwidgets/ui/windows/abstract_window":53}],61:[function(require,module,exports){
+/// <reference path='../../../qkwidgets/types/qooxdoo.d.ts' />
+"use strict";
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var abstract_window_1 = require("../../../qkwidgets/ui/windows/abstract_window");
+var basic_manager_1 = require("../../../qkwidgets/managers/basic_manager");
+var file_manager_1 = require("../../../qkwidgets/managers/file_manager");
+var script_browser_button_bar_1 = require("../../../qkwidgets/ui/widgets/script_browser_button_bar");
+var grid_widget_1 = require("../../../qkwidgets/ui/widgets/grid_widget");
+var hsplit_pane_1 = require("../../../qkwidgets/ui/splitpane/hsplit_pane");
+var monaco_editor_1 = require("../../../qkwidgets/ui/widgets/iframe/monaco_editor");
+
+var ScriptBrowserWindow = function (_abstract_window_1$Ab) {
+    _inherits(ScriptBrowserWindow, _abstract_window_1$Ab);
+
+    function ScriptBrowserWindow() {
+        _classCallCheck(this, ScriptBrowserWindow);
+
+        return _possibleConstructorReturn(this, (ScriptBrowserWindow.__proto__ || Object.getPrototypeOf(ScriptBrowserWindow)).apply(this, arguments));
+    }
+
+    _createClass(ScriptBrowserWindow, [{
+        key: "init",
+        value: function init() {
+            this.editor = new monaco_editor_1.MonacoEditor();
+            this.files = new grid_widget_1.GridWidget(this);
+            _get(ScriptBrowserWindow.prototype.__proto__ || Object.getPrototypeOf(ScriptBrowserWindow.prototype), "init", this).call(this);
+            file_manager_1.FileManager.read_files(this.onReadFiles, this);
+        }
+    }, {
+        key: "addButtons",
+        value: function addButtons() {
+            this.buttonBar = new script_browser_button_bar_1.ScriptBrowserButtonBar(this);
+            this.add(this.buttonBar, { edge: 'south' });
+        }
+    }, {
+        key: "addContent",
+        value: function addContent() {
+            var hsplitpane = new hsplit_pane_1.HSplitPane();
+            hsplitpane.add(this.files, 1);
+            hsplitpane.add(this.editor, 4);
+            this.add(hsplitpane, { edge: 'center' });
+        }
+    }, {
+        key: "autoShow",
+        value: function autoShow() {
+            return true;
+        }
+    }, {
+        key: "getDefaultCentered",
+        value: function getDefaultCentered() {
+            return true;
+        }
+    }, {
+        key: "getDefaultHeight",
+        value: function getDefaultHeight() {
+            return 475;
+        }
+    }, {
+        key: "getDefaultWidth",
+        value: function getDefaultWidth() {
+            return 575;
+        }
+    }, {
+        key: "getScript",
+        value: function getScript() {
+            return this.editor.getContent();
+        }
+    }, {
+        key: "getWindowCaption",
+        value: function getWindowCaption() {
+            return 'Script Browser';
+        }
+    }, {
+        key: "getGridColumnNames",
+        value: function getGridColumnNames() {
+            return ['fname'];
+        }
+    }, {
+        key: "getGridColumnTitles",
+        value: function getGridColumnTitles() {
+            return ['Name'];
+        }
+    }, {
+        key: "onClear",
+        value: function onClear() {
+            this.editor.setContent('');
+        }
+    }, {
+        key: "onLoad",
+        value: function onLoad() {
+            console.log('onLoad');
+        }
+    }, {
+        key: "onReadFile",
+        value: function onReadFile(text) {
+            this.editor.setContent(text);
+        }
+    }, {
+        key: "onReadFiles",
+        value: function onReadFiles(names) {
+            var fnames = [];
+            var _iteratorNormalCompletion = true;
+            var _didIteratorError = false;
+            var _iteratorError = undefined;
+
+            try {
+                for (var _iterator = names[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                    var name = _step.value;
+
+                    fnames.push({ fname: name });
+                }
+            } catch (err) {
+                _didIteratorError = true;
+                _iteratorError = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion && _iterator.return) {
+                        _iterator.return();
+                    }
+                } finally {
+                    if (_didIteratorError) {
+                        throw _iteratorError;
+                    }
+                }
+            }
+
+            this.files.showData(fnames);
+        }
+    }, {
+        key: "onRun",
+        value: function onRun() {
+            basic_manager_1.BasicManager.eval_script(this.getScript(), this.onShowReply, this);
+        }
+    }, {
+        key: "onShowReply",
+        value: function onShowReply(reply) {}
+    }, {
+        key: "showSelection",
+        value: function showSelection(fname) {
+            file_manager_1.FileManager.read_file(fname, this.onReadFile, this);
+        }
+    }]);
+
+    return ScriptBrowserWindow;
+}(abstract_window_1.AbstractWindow);
+
+exports.ScriptBrowserWindow = ScriptBrowserWindow;
+
+},{"../../../qkwidgets/managers/basic_manager":14,"../../../qkwidgets/managers/file_manager":15,"../../../qkwidgets/ui/splitpane/hsplit_pane":22,"../../../qkwidgets/ui/widgets/grid_widget":44,"../../../qkwidgets/ui/widgets/iframe/monaco_editor":46,"../../../qkwidgets/ui/widgets/script_browser_button_bar":51,"../../../qkwidgets/ui/windows/abstract_window":53}]},{},[2])
 
 //# sourceMappingURL=app.js.map

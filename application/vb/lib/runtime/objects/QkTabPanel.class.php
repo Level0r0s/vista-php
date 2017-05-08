@@ -6,7 +6,7 @@ class runtime_objects_QkTabPanel extends runtime_objects_QkProxyObject {
 		parent::__construct($name);
 	}}
 	public function creationService() {
-		return _hx_anonymous(array("service" => "create", "args" => _hx_anonymous(array("id" => $this->proxyId, "xtype" => "tabpanel"))));
+		return _hx_anonymous(array("service" => "create", "args" => _hx_anonymous(array("id" => $this->proxyId, "xtype" => "tabview"))));
 	}
 	public function toString() {
 		return "QkTabPanel(" . _hx_string_or_null($this->name) . ", " . _hx_string_rec($this->proxyId, "") . ")";

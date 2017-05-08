@@ -15,6 +15,11 @@ class runtime_UiFunctions extends runtime_Builtins {
 		$this->queueCreation($button);
 		return $button;
 	}
+	public function dimensionCanvas($name) {
+		$canvas = new runtime_objects_QkCanvas($name);
+		$this->queueCreation($canvas);
+		return $canvas;
+	}
 	public function dimensionFormPanel($name) {
 		$form = new runtime_objects_QkFormPanel($name);
 		$this->queueCreation($form);
@@ -34,6 +39,11 @@ class runtime_UiFunctions extends runtime_Builtins {
 		$editor = new runtime_objects_QkRichEditor($name);
 		$this->queueCreation($editor);
 		return $editor;
+	}
+	public function dimensionTabPage($name) {
+		$page = new runtime_objects_QkTabPage($name);
+		$this->queueCreation($page);
+		return $page;
 	}
 	public function dimensionTabPanel($name) {
 		$panel = new runtime_objects_QkTabPanel($name);

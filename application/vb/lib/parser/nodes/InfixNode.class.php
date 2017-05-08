@@ -37,22 +37,22 @@ class parser_nodes_InfixNode extends parser_nodes_ParseNode {
 		case 20:{
 			return 7;
 		}break;
-		case 51:{
+		case 53:{
 			return 10;
 		}break;
-		case 52:{
+		case 54:{
 			return 11;
 		}break;
-		case 53:{
+		case 55:{
 			return 12;
 		}break;
-		case 54:{
+		case 56:{
 			return 13;
 		}break;
-		case 58:{
+		case 60:{
 			return 14;
 		}break;
-		case 63:{
+		case 65:{
 			return 24;
 		}break;
 		default:{

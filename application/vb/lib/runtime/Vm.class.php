@@ -8,8 +8,7 @@ class runtime_Vm {
 		return runtime_Vm::runScript(runtime_Vm::addLibs($script));
 	}
 	static function addLibs($script) {
-		$lib1 = sys_io_File::getContent("./vb/lib1.vb");
-		return "" . _hx_string_or_null($lib1) . "\x0A\x0A" . _hx_string_or_null($script) . "\x0A\x0A";
+		return $script;
 	}
 	static function runScript($script) {
 		$src = "" . _hx_string_or_null($script) . "\x0A\x0A";

@@ -102,13 +102,13 @@ class runtime_Process extends runtime_StdFunctions {
 	}
 	public function hasMore() {
 		$this->iterations++;
-		return $this->index < $this->bytecodes->length;
+		return $this->pc < $this->bytecodes->length;
 	}
 	public function bcIndex() {
 		return $this->next();
 	}
 	public function next() {
-		return $this->bytecodes[$this->index++];
+		return $this->bytecodes[$this->pc++];
 	}
 	public function unknownOpcode($opCode) {
 		haxe_Log::trace("unknownOpcode(" . _hx_string_rec($opCode, "") . ")", _hx_anonymous(array("fileName" => "Process.hx", "lineNumber" => 84, "className" => "runtime.Process", "methodName" => "unknownOpcode", "customParams" => (new _hx_array(array($this->bytecodes))))));

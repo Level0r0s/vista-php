@@ -6,16 +6,18 @@ class constants_DimensionType {
 	static $Any = 1;
 	static $BasicEditor = 2;
 	static $Button = 3;
-	static $Database = 4;
-	static $FormPanel = 5;
-	static $HSplitPanel = 6;
-	static $ListPanel = 7;
-	static $RichEditor = 8;
-	static $TabPanel = 9;
-	static $TextArea = 10;
-	static $TextField = 11;
-	static $Window = 12;
-	static $Viewport = 13;
-	static $VSplitPanel = 14;
+	static $Canvas = 4;
+	static $Database = 5;
+	static $FormPanel = 6;
+	static $HSplitPanel = 7;
+	static $ListPanel = 8;
+	static $RichEditor = 9;
+	static $TabPage = 10;
+	static $TabPanel = 11;
+	static $TextArea = 12;
+	static $TextField = 13;
+	static $Window = 14;
+	static $Viewport = 15;
+	static $VSplitPanel = 16;
 	function __toString() { return 'constants.DimensionType'; }
 }
