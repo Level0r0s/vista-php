@@ -2,7 +2,7 @@
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.NAVBAR_LABEL_TEXT = 'Vista Basic Home';
+exports.NAVBAR_LABEL_TEXT = 'Vista Basic';
 
 },{}],2:[function(require,module,exports){
 "use strict";
@@ -34,7 +34,274 @@ var Main = function () {
 exports.Main = Main;
 applib.Application.startupFunction = Main.run;
 
-},{"./ui/viewport/viewport":61}],3:[function(require,module,exports){
+},{"./ui/viewport/viewport":63}],3:[function(require,module,exports){
+"use strict";
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var node_1 = require("./node");
+var server_1 = require("./server");
+
+var Api = function () {
+    function Api() {
+        _classCallCheck(this, Api);
+    }
+
+    _createClass(Api, null, [{
+        key: "getInstance",
+        value: function getInstance() {
+            if (!this.instance) this.instance = new Api();
+            return this.instance;
+        }
+    }, {
+        key: "isServer",
+        value: function isServer() {
+            return window.require == undefined;
+        }
+    }, {
+        key: "deleteModel",
+        value: function deleteModel(model, id) {
+            var fn = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+            var scope = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
+
+            if (this.isServer()) server_1.Server.deleteModel(model, id, fn, scope);else node_1.Node.deleteModel(model, id, fn, scope);
+        }
+    }, {
+        key: "evalScript",
+        value: function evalScript(script) {
+            var fn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+
+            if (this.isServer()) server_1.Server.evalScript(script, fn);else node_1.Node.evalScript(script, fn);
+        }
+    }, {
+        key: "getClassNames",
+        value: function getClassNames() {
+            var fn = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+
+            if (this.isServer()) server_1.Server.getClassNames(fn);else node_1.Node.getClassNames(fn);
+        }
+    }, {
+        key: "getModel",
+        value: function getModel(model) {
+            var args = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+            var fn = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+            var scope = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
+
+            if (this.isServer()) server_1.Server.getModel(model, args, fn, scope);else node_1.Node.getModel(model, args, fn, scope);
+        }
+    }, {
+        key: "login",
+        value: function login(email, password, fn) {
+            var scope = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
+
+            if (this.isServer()) server_1.Server.login(email, password, fn, scope);else node_1.Node.login(email, password, fn, scope);
+        }
+    }, {
+        key: "logout",
+        value: function logout(fn) {
+            var scope = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+
+            if (this.isServer()) server_1.Server.logout(fn, scope);else node_1.Node.logout(fn, scope);
+        }
+    }, {
+        key: "readFile",
+        value: function readFile(fname, fn) {
+            if (this.isServer()) server_1.Server.readFile(fname, fn);else node_1.Node.readFile(fname, fn);
+        }
+    }, {
+        key: "readFiles",
+        value: function readFiles() {
+            var fn = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+
+            if (this.isServer()) server_1.Server.readFiles(fn);else node_1.Node.readFiles(fn);
+        }
+    }, {
+        key: "register",
+        value: function register(name, email, password, password_confirmation, fn) {
+            var scope = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : null;
+
+            if (this.isServer()) server_1.Server.register(name, email, password, password_confirmation, fn, scope);else node_1.Node.register(name, email, password, password_confirmation, fn, scope);
+        }
+    }, {
+        key: "storeModel",
+        value: function storeModel(model, data) {
+            var fn = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+            var scope = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
+
+            if (this.isServer()) server_1.Server.storeModel(model, data, fn, scope);else node_1.Node.storeModel(model, data, fn, scope);
+        }
+    }, {
+        key: "updateModel",
+        value: function updateModel(model, id) {
+            var data = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+            var fn = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
+            var scope = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : null;
+
+            if (this.isServer()) server_1.Server.updateModel(model, id, data, fn, scope);else node_1.Node.updateModel(model, id, data, fn, scope);
+        }
+    }]);
+
+    return Api;
+}();
+
+exports.Api = Api;
+
+},{"./node":4,"./server":5}],4:[function(require,module,exports){
+"use strict";
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var vbPath = './app/vb';
+
+var Node = function () {
+    function Node() {
+        _classCallCheck(this, Node);
+    }
+
+    _createClass(Node, null, [{
+        key: "getFs",
+        value: function getFs() {
+            if (this.fs == undefined) {
+                this.fs = window.require('fs');
+            }
+            return this.fs;
+        }
+    }, {
+        key: "getInstance",
+        value: function getInstance() {
+            if (!this.instance) {
+                this.instance = new Node();
+            }
+            return this.instance;
+        }
+    }, {
+        key: "deleteModel",
+        value: function deleteModel(model, id) {
+            var fn = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+            var scope = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
+
+            console.log('Node: deleteModel');
+        }
+    }, {
+        key: "evalScript",
+        value: function evalScript(script) {
+            var fn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+
+            console.log('Node: evalScript');
+        }
+    }, {
+        key: "getClassNames",
+        value: function getClassNames() {
+            var fn = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+
+            console.log('Node: getClassNames');
+        }
+    }, {
+        key: "getModel",
+        value: function getModel(model) {
+            var args = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+            var fn = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+            var scope = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
+
+            console.log('Node: getModel');
+        }
+    }, {
+        key: "login",
+        value: function login(email, password, fn) {
+            var scope = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
+
+            console.log('Node: login');
+        }
+    }, {
+        key: "logout",
+        value: function logout(fn) {
+            var scope = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+
+            console.log('Node: logout');
+        }
+    }, {
+        key: "readFile",
+        value: function readFile(fname, fn) {
+            var fs = this.getFs();
+            var path = vbPath + "/" + fname;
+            fs.readFile(path, function (err, text) {
+                if (fn) fn.call(null, text.toString());
+            });
+        }
+    }, {
+        key: "readFiles",
+        value: function readFiles() {
+            var fn = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+
+            var fs = this.getFs();
+            var fnames = [];
+            fs.readdir(vbPath, function (err, files) {
+                var _iteratorNormalCompletion = true;
+                var _didIteratorError = false;
+                var _iteratorError = undefined;
+
+                try {
+                    for (var _iterator = files[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                        var fname = _step.value;
+
+                        fnames.push(fname);
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally {
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return) {
+                            _iterator.return();
+                        }
+                    } finally {
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+
+                if (fn) fn.call(null, fnames);
+            });
+        }
+    }, {
+        key: "register",
+        value: function register(name, email, password, password_confirmation, fn) {
+            var scope = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : null;
+
+            console.log('Node: register');
+        }
+    }, {
+        key: "storeModel",
+        value: function storeModel(model, data) {
+            var fn = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+            var scope = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
+
+            console.log('Node: storeModel');
+        }
+    }, {
+        key: "updateModel",
+        value: function updateModel(model, id) {
+            var data = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+            var fn = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
+            var scope = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : null;
+
+            console.log('Node: updateModel');
+        }
+    }]);
+
+    return Node;
+}();
+
+exports.Node = Node;
+
+},{}],5:[function(require,module,exports){
 /// <reference path="../../qkwidgets/types/qooxdoo.d.ts" />
 "use strict";
 
@@ -48,14 +315,12 @@ var reply_manager_1 = require("../managers/reply_manager");
 var qx_constants = require("../constants/qx_constants");
 var css_selector = '#csrf_token';
 
-var Rest = function () {
-    _createClass(Rest, null, [{
+var Server = function () {
+    _createClass(Server, null, [{
         key: "getInstance",
         value: function getInstance() {
-            if (!Rest.instance) {
-                Rest.instance = new Rest();
-            }
-            return Rest.instance;
+            if (!this.instance) this.instance = new Server();
+            return this.instance;
         }
     }, {
         key: "deleteModel",
@@ -140,14 +405,14 @@ var Rest = function () {
         }
     }]);
 
-    function Rest() {
-        _classCallCheck(this, Rest);
+    function Server() {
+        _classCallCheck(this, Server);
 
         var selection = new q(css_selector);
         if (selection.length > 0) this.csrf_token = selection[0].value;
     }
 
-    _createClass(Rest, [{
+    _createClass(Server, [{
         key: "createDeleteModelRequest",
         value: function createDeleteModelRequest(model, id) {
             return this.createModelRequest(model, 'DELETE', id);
@@ -286,12 +551,12 @@ var Rest = function () {
         }
     }]);
 
-    return Rest;
+    return Server;
 }();
 
-exports.Rest = Rest;
+exports.Server = Server;
 
-},{"../constants/qx_constants":9,"../managers/reply_manager":16}],4:[function(require,module,exports){
+},{"../constants/qx_constants":11,"../managers/reply_manager":18}],6:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -306,7 +571,7 @@ var ButtonType;
 })(ButtonType || (ButtonType = {}));
 exports.default = ButtonType;
 
-},{}],5:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -317,7 +582,7 @@ exports.RECORD_UPDATED_EVENT = 'record_updated';
 exports.RESIZE_EVENT = 'resize';
 exports.SESSION_STATE_CHANGED = 'session_state_changed';
 
-},{}],6:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -330,7 +595,7 @@ exports.PENGUIN_ICON_WIDTH = 136;
 exports.PENGUIN_ICON_HEIGHT = 180;
 exports.STRIPED_PATTERN = 'public/images/striped-pattern.jpg';
 
-},{}],7:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -338,13 +603,13 @@ exports.MONACO_EDITOR_PATH = 'public/monaco_editor/index.html';
 exports.MONACO_EDITOR_OFFSET_WIDTH = 2;
 exports.MONACO_EDITOR_OFFSET_HEIGHT = 38;
 
-},{}],8:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PAPER_PATH = 'public/paper/index.html';
 
-},{}],9:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -364,7 +629,7 @@ exports.SUCCESS = 'success';
 exports.SINGLE_SELECTION = 2;
 exports.CSRF_COOKIE = 'XSRF-TOKEN';
 
-},{}],10:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -373,7 +638,7 @@ exports.NAVBAR_LOGOUT_TEXT = 'Logout';
 exports.NAVBAR_REGISTER_TEXT = 'Register';
 exports.NAVBAR_SETTINGS_TEXT = 'Settings';
 
-},{}],11:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -386,7 +651,7 @@ var SessionState;
 })(SessionState || (SessionState = {}));
 exports.default = SessionState;
 
-},{}],12:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -460,7 +725,7 @@ exports.BUTTONBAR_INFO_WARN_COLOR = exports.tbs_brand_warning;
 exports.DEFAULT_WINDOW_HEIGHT_PCT = 0.5;
 exports.DEFAULT_WINDOW_WIDTH_PCT = 0.5;
 
-},{}],13:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -468,7 +733,7 @@ exports.TINYMCE_PATH = 'public/tinymce/index.html';
 exports.TINYMCE_OFFSET_WIDTH = 2;
 exports.TINYMCE_OFFSET_HEIGHT = 38;
 
-},{}],14:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 "use strict";
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -477,7 +742,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 Object.defineProperty(exports, "__esModule", { value: true });
 /// <reference path="../types/qooxdoo.d.ts" />
-var rest_1 = require("../api/rest");
+var api_1 = require("../api/api");
 var service_manager_1 = require("./service_manager");
 
 var BasicManager = function () {
@@ -488,7 +753,7 @@ var BasicManager = function () {
     _createClass(BasicManager, [{
         key: "eval_script",
         value: function eval_script(script, fn, scope) {
-            rest_1.Rest.evalScript(script, function (reply) {
+            api_1.Api.evalScript(script, function (reply) {
                 for (var k in reply) {
                     var v = reply[k];
                     if (v instanceof Array) {
@@ -524,7 +789,7 @@ var BasicManager = function () {
     }, {
         key: "get_class_names",
         value: function get_class_names(fn, scope) {
-            rest_1.Rest.getClassNames(function (reply) {
+            api_1.Api.getClassNames(function (reply) {
                 if (fn) fn.call(scope, reply);
             });
         }
@@ -559,7 +824,7 @@ var BasicManager = function () {
 
 exports.BasicManager = BasicManager;
 
-},{"../api/rest":3,"./service_manager":17}],15:[function(require,module,exports){
+},{"../api/api":3,"./service_manager":19}],17:[function(require,module,exports){
 "use strict";
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -568,7 +833,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 Object.defineProperty(exports, "__esModule", { value: true });
 /// <reference path="../types/qooxdoo.d.ts" />
-var rest_1 = require("../api/rest");
+var api_1 = require("../api/api");
 
 var FileManager = function () {
     function FileManager() {
@@ -578,14 +843,14 @@ var FileManager = function () {
     _createClass(FileManager, [{
         key: "read_file",
         value: function read_file(fname, fn, scope) {
-            rest_1.Rest.readFile(fname, function (reply) {
+            api_1.Api.readFile(fname, function (reply) {
                 if (fn) fn.call(scope, reply);
             });
         }
     }, {
         key: "read_files",
         value: function read_files(fn, scope) {
-            rest_1.Rest.readFiles(function (reply) {
+            api_1.Api.readFiles(function (reply) {
                 if (fn) fn.call(scope, reply);
             });
         }
@@ -617,7 +882,7 @@ var FileManager = function () {
 
 exports.FileManager = FileManager;
 
-},{"../api/rest":3}],16:[function(require,module,exports){
+},{"../api/api":3}],18:[function(require,module,exports){
 /// <reference path="../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -657,7 +922,7 @@ var ReplyManager = function () {
 
 exports.ReplyManager = ReplyManager;
 
-},{}],17:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 "use strict";
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -899,7 +1164,7 @@ var ServiceManager = function () {
 
 exports.ServiceManager = ServiceManager;
 
-},{"../ui/splitpane/hsplit_pane":22,"../ui/splitpane/vsplit_pane":24,"../ui/tabview/tab_page":25,"../ui/tabview/tab_view":26,"../ui/widgets/iframe/monaco_editor":47,"../ui/widgets/iframe/paper":48,"../ui/widgets/iframe/tinymce":49,"../ui/windows/abstract_window":55}],18:[function(require,module,exports){
+},{"../ui/splitpane/hsplit_pane":24,"../ui/splitpane/vsplit_pane":26,"../ui/tabview/tab_page":27,"../ui/tabview/tab_view":28,"../ui/widgets/iframe/monaco_editor":49,"../ui/widgets/iframe/paper":50,"../ui/widgets/iframe/tinymce":51,"../ui/windows/abstract_window":57}],20:[function(require,module,exports){
 /// <reference path="../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -912,7 +1177,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var rest_1 = require("../api/rest");
+var api_1 = require("../api/api");
 var session_state_1 = require("../constants/session_state");
 var event_constants = require("../constants/event_constants");
 
@@ -968,7 +1233,7 @@ var SessionManager = function (_qx$core$Object) {
         value: function login(email, password, sender) {
             var _this2 = this;
 
-            rest_1.Rest.login(email, password, function (reply) {
+            api_1.Api.login(email, password, function (reply) {
                 sender.onLoginReply(reply);
                 _this2.onLoginReply(reply);
             });
@@ -978,7 +1243,7 @@ var SessionManager = function (_qx$core$Object) {
         value: function logout() {
             var _this3 = this;
 
-            rest_1.Rest.logout(function (reply) {
+            api_1.Api.logout(function (reply) {
                 _this3.onLogoutReply(reply);
             });
         }
@@ -987,7 +1252,7 @@ var SessionManager = function (_qx$core$Object) {
         value: function register(name, email, password, password_confirmation, sender) {
             var _this4 = this;
 
-            rest_1.Rest.register(name, email, password, password_confirmation, function (reply) {
+            api_1.Api.register(name, email, password, password_confirmation, function (reply) {
                 sender.onRegisterReply(reply);
                 _this4.onRegisterReply(reply);
             });
@@ -1023,7 +1288,7 @@ var SessionManager = function (_qx$core$Object) {
 
 exports.SessionManager = SessionManager;
 
-},{"../api/rest":3,"../constants/event_constants":5,"../constants/session_state":11}],19:[function(require,module,exports){
+},{"../api/api":3,"../constants/event_constants":7,"../constants/session_state":13}],21:[function(require,module,exports){
 /// <reference path="../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -1065,7 +1330,7 @@ var AbstractPanel = function (_Composite) {
 
 exports.AbstractPanel = AbstractPanel;
 
-},{"../../constants/qx_constants":9}],20:[function(require,module,exports){
+},{"../../constants/qx_constants":11}],22:[function(require,module,exports){
 /// <reference path="../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -1106,7 +1371,7 @@ var AbstractDesktop = function (_QxDesktop) {
 
 exports.AbstractDesktop = AbstractDesktop;
 
-},{}],21:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 /// <reference path="../../../qkwidgets/types/qooxdoo.d.ts" />
 "use strict";
 
@@ -1159,7 +1424,7 @@ var PatternDesktop = function (_abstract_desktop_1$A) {
 
 exports.PatternDesktop = PatternDesktop;
 
-},{"../../constants/image_constants":6,"./abstract_desktop":20}],22:[function(require,module,exports){
+},{"../../constants/image_constants":8,"./abstract_desktop":22}],24:[function(require,module,exports){
 /// <reference path="../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -1186,7 +1451,7 @@ var HSplitPane = function (_split_pane_1$SplitPa) {
 
 exports.HSplitPane = HSplitPane;
 
-},{"./split_pane":23}],23:[function(require,module,exports){
+},{"./split_pane":25}],25:[function(require,module,exports){
 /// <reference path="../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -1213,7 +1478,7 @@ var SplitPane = function (_QxSplitPane) {
 
 exports.SplitPane = SplitPane;
 
-},{}],24:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 /// <reference path="../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -1240,7 +1505,7 @@ var VSplitPane = function (_split_pane_1$SplitPa) {
 
 exports.VSplitPane = VSplitPane;
 
-},{"./split_pane":23}],25:[function(require,module,exports){
+},{"./split_pane":25}],27:[function(require,module,exports){
 /// <reference path="../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -1272,7 +1537,7 @@ var TabPage = function (_QxPage) {
 
 exports.TabPage = TabPage;
 
-},{}],26:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 /// <reference path="../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -1299,7 +1564,7 @@ var TabView = function (_QxTabView) {
 
 exports.TabView = TabView;
 
-},{}],27:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 /// <reference path="../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -1382,7 +1647,7 @@ var AbstractViewport = function (_Composite) {
 
 exports.AbstractViewport = AbstractViewport;
 
-},{"../desktop/pattern_desktop":21,"./navbar/navbar":28,"./navpanel/abstract_navpanel":32}],28:[function(require,module,exports){
+},{"../desktop/pattern_desktop":23,"./navbar/navbar":30,"./navpanel/abstract_navpanel":34}],30:[function(require,module,exports){
 /// <reference path="../../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -1469,7 +1734,7 @@ var Navbar = function (_Composite) {
 
 exports.Navbar = Navbar;
 
-},{"../../../constants/style_constants":12,"../../../managers/session_manager":18,"./navbar_label":29,"./navbar_login":30,"./navbar_messages":31}],29:[function(require,module,exports){
+},{"../../../constants/style_constants":14,"../../../managers/session_manager":20,"./navbar_label":31,"./navbar_login":32,"./navbar_messages":33}],31:[function(require,module,exports){
 /// <reference path="../../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -1546,7 +1811,7 @@ var NavbarLabel = function (_Composite) {
 
 exports.NavbarLabel = NavbarLabel;
 
-},{"../../../constants/image_constants":6,"../../../constants/style_constants":12}],30:[function(require,module,exports){
+},{"../../../constants/image_constants":8,"../../../constants/style_constants":14}],32:[function(require,module,exports){
 /// <reference path="../../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -1689,7 +1954,7 @@ var NavbarLogin = function (_SplitButton) {
 
 exports.NavbarLogin = NavbarLogin;
 
-},{"../../../constants/image_constants":6,"../../../constants/qx_constants":9,"../../../constants/session_messages":10,"../../../constants/session_state":11,"../../../constants/style_constants":12,"../../../managers/session_manager":18,"../../widgets/menu_button":50,"../../windows/form/session/login_window":57,"../../windows/form/session/register_window":58,"../../windows/form/session/settings_window":59}],31:[function(require,module,exports){
+},{"../../../constants/image_constants":8,"../../../constants/qx_constants":11,"../../../constants/session_messages":12,"../../../constants/session_state":13,"../../../constants/style_constants":14,"../../../managers/session_manager":20,"../../widgets/menu_button":52,"../../windows/form/session/login_window":59,"../../windows/form/session/register_window":60,"../../windows/form/session/settings_window":61}],33:[function(require,module,exports){
 /// <reference path="../../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -1758,7 +2023,7 @@ var NavbarMessages = function (_Composite) {
 
 exports.NavbarMessages = NavbarMessages;
 
-},{"../../../constants/style_constants":12}],32:[function(require,module,exports){
+},{"../../../constants/style_constants":14}],34:[function(require,module,exports){
 /// <reference path="../../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -1840,7 +2105,7 @@ var AbstractNavpanel = function (_abstract_panel_1$Abs) {
 
 exports.AbstractNavpanel = AbstractNavpanel;
 
-},{"../../../constants/session_state":11,"../../../constants/style_constants":12,"../../../managers/session_manager":18,"../../abstract/abstract_panel":19}],33:[function(require,module,exports){
+},{"../../../constants/session_state":13,"../../../constants/style_constants":14,"../../../managers/session_manager":20,"../../abstract/abstract_panel":21}],35:[function(require,module,exports){
 /// <reference path="../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -1895,7 +2160,7 @@ var BasicButtonBar = function (_simple_button_bar_1$) {
 
 exports.BasicButtonBar = BasicButtonBar;
 
-},{"./menubar_button":51,"./simple_button_bar":53}],34:[function(require,module,exports){
+},{"./menubar_button":53,"./simple_button_bar":55}],36:[function(require,module,exports){
 /// <reference path="../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -1962,7 +2227,7 @@ var Button = function (_QxButton) {
 
 exports.Button = Button;
 
-},{"../../constants/button_type":4,"../../constants/qx_constants":9,"../../constants/style_constants":12}],35:[function(require,module,exports){
+},{"../../constants/button_type":6,"../../constants/qx_constants":11,"../../constants/style_constants":14}],37:[function(require,module,exports){
 /// <reference path="../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -2015,7 +2280,7 @@ var ClassBrowserButtonBar = function (_simple_button_bar_1$) {
 
 exports.ClassBrowserButtonBar = ClassBrowserButtonBar;
 
-},{"./menubar_button":51,"./simple_button_bar":53}],36:[function(require,module,exports){
+},{"./menubar_button":53,"./simple_button_bar":55}],38:[function(require,module,exports){
 /// <reference path="../../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -2059,7 +2324,7 @@ var CheckBox = function (_QxCheckBox) {
 
 exports.CheckBox = CheckBox;
 
-},{}],37:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 /// <reference path="../../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -2108,7 +2373,7 @@ var DateField = function (_QxDateField) {
 
 exports.DateField = DateField;
 
-},{}],38:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
 /// <reference path="../../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -2144,7 +2409,7 @@ var PasswordField = function (_QxPasswordField) {
 
 exports.PasswordField = PasswordField;
 
-},{}],39:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 /// <reference path="../../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -2289,7 +2554,7 @@ var RadioButtonGroup = function (_QxRadioButtonGroup) {
 
 exports.RadioButtonGroup = RadioButtonGroup;
 
-},{}],40:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 /// <reference path="../../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -2325,7 +2590,7 @@ var TextArea = function (_QxTextArea) {
 
 exports.TextArea = TextArea;
 
-},{}],41:[function(require,module,exports){
+},{}],43:[function(require,module,exports){
 /// <reference path="../../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -2361,7 +2626,7 @@ var TextField = function (_QxTextField) {
 
 exports.TextField = TextField;
 
-},{}],42:[function(require,module,exports){
+},{}],44:[function(require,module,exports){
 /// <reference path="../../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -2507,7 +2772,7 @@ var AbstractForm = function (_Scroll) {
 
 exports.AbstractForm = AbstractForm;
 
-},{"../fields/check_box":36,"../fields/date_field":37,"../fields/password_field":38,"../fields/radio_button_group":39,"../fields/text_area":40,"../fields/text_field":41}],43:[function(require,module,exports){
+},{"../fields/check_box":38,"../fields/date_field":39,"../fields/password_field":40,"../fields/radio_button_group":41,"../fields/text_area":42,"../fields/text_field":43}],45:[function(require,module,exports){
 /// <reference path="../../../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -2573,7 +2838,7 @@ var LoginForm = function (_abstract_form_1$Abst) {
 
 exports.LoginForm = LoginForm;
 
-},{"../../../../constants/button_type":4,"../../button":34,"../abstract_form":42}],44:[function(require,module,exports){
+},{"../../../../constants/button_type":6,"../../button":36,"../abstract_form":44}],46:[function(require,module,exports){
 /// <reference path="../../../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -2643,7 +2908,7 @@ var RegisterForm = function (_abstract_form_1$Abst) {
 
 exports.RegisterForm = RegisterForm;
 
-},{"../../../../constants/button_type":4,"../../button":34,"../abstract_form":42}],45:[function(require,module,exports){
+},{"../../../../constants/button_type":6,"../../button":36,"../abstract_form":44}],47:[function(require,module,exports){
 /// <reference path="../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -2806,7 +3071,7 @@ var GridWidget = function (_Table) {
 
 exports.GridWidget = GridWidget;
 
-},{"../../constants/event_constants":5,"../../constants/qx_constants":9}],46:[function(require,module,exports){
+},{"../../constants/event_constants":7,"../../constants/qx_constants":11}],48:[function(require,module,exports){
 /// <reference path="../../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -2880,7 +3145,7 @@ var AbstractIFrame = function (_QxIFrame) {
 
 exports.AbstractIFrame = AbstractIFrame;
 
-},{"../../../constants/qx_constants":9}],47:[function(require,module,exports){
+},{"../../../constants/qx_constants":11}],49:[function(require,module,exports){
 /// <reference path="../../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -2932,7 +3197,7 @@ var MonacoEditor = function (_abstract_iframe_1$Ab) {
 
 exports.MonacoEditor = MonacoEditor;
 
-},{"../../../constants/monaco_editor_constants":7,"./abstract_iframe":46}],48:[function(require,module,exports){
+},{"../../../constants/monaco_editor_constants":9,"./abstract_iframe":48}],50:[function(require,module,exports){
 /// <reference path="../../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -3022,7 +3287,7 @@ var Paper = function (_abstract_iframe_1$Ab) {
 
 exports.Paper = Paper;
 
-},{"../../../constants/paper_constants":8,"./abstract_iframe":46}],49:[function(require,module,exports){
+},{"../../../constants/paper_constants":10,"./abstract_iframe":48}],51:[function(require,module,exports){
 /// <reference path="../../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -3093,7 +3358,7 @@ var TinyMce = function (_abstract_iframe_1$Ab) {
 
 exports.TinyMce = TinyMce;
 
-},{"../../../constants/tinymce_constants":13,"./abstract_iframe":46}],50:[function(require,module,exports){
+},{"../../../constants/tinymce_constants":15,"./abstract_iframe":48}],52:[function(require,module,exports){
 /// <reference path="../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -3129,7 +3394,7 @@ var MenuButton = function (_QxMenuButton) {
 
 exports.MenuButton = MenuButton;
 
-},{"../../constants/qx_constants":9}],51:[function(require,module,exports){
+},{"../../constants/qx_constants":11}],53:[function(require,module,exports){
 /// <reference path="../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -3166,7 +3431,7 @@ var MenubarButton = function (_QxMenubarButton) {
 
 exports.MenubarButton = MenubarButton;
 
-},{"../../constants/qx_constants":9}],52:[function(require,module,exports){
+},{"../../constants/qx_constants":11}],54:[function(require,module,exports){
 /// <reference path="../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -3221,7 +3486,7 @@ var ScriptBrowserButtonBar = function (_simple_button_bar_1$) {
 
 exports.ScriptBrowserButtonBar = ScriptBrowserButtonBar;
 
-},{"./menubar_button":51,"./simple_button_bar":53}],53:[function(require,module,exports){
+},{"./menubar_button":53,"./simple_button_bar":55}],55:[function(require,module,exports){
 /// <reference path="../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -3283,7 +3548,7 @@ var SimpleButtonBar = function (_Composite) {
 
 exports.SimpleButtonBar = SimpleButtonBar;
 
-},{"../../constants/style_constants":12}],54:[function(require,module,exports){
+},{"../../constants/style_constants":14}],56:[function(require,module,exports){
 /// <reference path="../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -3366,7 +3631,7 @@ var TreeWidget = function (_Tree) {
 
 exports.TreeWidget = TreeWidget;
 
-},{}],55:[function(require,module,exports){
+},{}],57:[function(require,module,exports){
 /// <reference path="../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -3477,7 +3742,7 @@ var AbstractWindow = function (_QxWindow) {
 
 exports.AbstractWindow = AbstractWindow;
 
-},{"../../constants/qx_constants":9,"../viewport/abstract_viewport":27}],56:[function(require,module,exports){
+},{"../../constants/qx_constants":11,"../viewport/abstract_viewport":29}],58:[function(require,module,exports){
 /// <reference path="../../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -3528,7 +3793,7 @@ var AbstractFormWindow = function (_abstract_window_1$Ab) {
 
 exports.AbstractFormWindow = AbstractFormWindow;
 
-},{"../../widgets/forms/abstract_form":42,"../abstract_window":55}],57:[function(require,module,exports){
+},{"../../widgets/forms/abstract_form":44,"../abstract_window":57}],59:[function(require,module,exports){
 /// <reference path="../../../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -3586,7 +3851,7 @@ var LoginWindow = function (_abstract_form_window) {
 
 exports.LoginWindow = LoginWindow;
 
-},{"../../../../managers/session_manager":18,"../../../widgets/forms/session/login_form":43,"../abstract_form_window":56}],58:[function(require,module,exports){
+},{"../../../../managers/session_manager":20,"../../../widgets/forms/session/login_form":45,"../abstract_form_window":58}],60:[function(require,module,exports){
 /// <reference path="../../../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -3639,7 +3904,7 @@ var RegisterWindow = function (_abstract_form_window) {
 
 exports.RegisterWindow = RegisterWindow;
 
-},{"../../../../managers/session_manager":18,"../../../widgets/forms/session/register_form":44,"../abstract_form_window":56}],59:[function(require,module,exports){
+},{"../../../../managers/session_manager":20,"../../../widgets/forms/session/register_form":46,"../abstract_form_window":58}],61:[function(require,module,exports){
 /// <reference path="../../../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -3675,7 +3940,7 @@ var SettingsWindow = function (_abstract_form_window) {
 
 exports.SettingsWindow = SettingsWindow;
 
-},{"../abstract_form_window":56}],60:[function(require,module,exports){
+},{"../abstract_form_window":58}],62:[function(require,module,exports){
 "use strict";
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -3705,8 +3970,8 @@ var Navpanel = function (_abstract_navpanel_1$) {
         key: "addButtons",
         value: function addButtons() {
             this.classBrowserBtn = this.addPanelButton('Class Browser', this.onClassBrowser);
+            this.fileBrowserBtn = this.addPanelButton('Script Browser', this.onScriptBrowser);
             this.workspaceBtn = this.addPanelButton('Workspace', this.onWorkspace);
-            this.fileBrowserBtn = this.addPanelButton('Script Browser', this.onFileBrowser);
         }
     }, {
         key: "setButtonsEnabled",
@@ -3721,8 +3986,8 @@ var Navpanel = function (_abstract_navpanel_1$) {
             new class_browser_window_1.ClassBrowserWindow();
         }
     }, {
-        key: "onFileBrowser",
-        value: function onFileBrowser() {
+        key: "onScriptBrowser",
+        value: function onScriptBrowser() {
             new script_browser_window_1.ScriptBrowserWindow();
         }
     }, {
@@ -3737,7 +4002,7 @@ var Navpanel = function (_abstract_navpanel_1$) {
 
 exports.Navpanel = Navpanel;
 
-},{"../../../qkwidgets/ui/viewport/navpanel/abstract_navpanel":32,"../../windows/iframe/workspace_window":62,"../../windows/tools/class_browser_window":63,"../../windows/tools/script_browser_window":64}],61:[function(require,module,exports){
+},{"../../../qkwidgets/ui/viewport/navpanel/abstract_navpanel":34,"../../windows/iframe/workspace_window":64,"../../windows/tools/class_browser_window":65,"../../windows/tools/script_browser_window":66}],63:[function(require,module,exports){
 "use strict";
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -3779,7 +4044,7 @@ var Viewport = function (_abstract_viewport_1$) {
 
 exports.Viewport = Viewport;
 
-},{"../../constants/app_constants":1,"../../qkwidgets/ui/viewport/abstract_viewport":27,"./navpanel/navpanel":60}],62:[function(require,module,exports){
+},{"../../constants/app_constants":1,"../../qkwidgets/ui/viewport/abstract_viewport":29,"./navpanel/navpanel":62}],64:[function(require,module,exports){
 /// <reference path="../../../qkwidgets/types/qooxdoo.d.ts" />
 "use strict";
 
@@ -3854,7 +4119,7 @@ var WorkspaceWindow = function (_abstract_window_1$Ab) {
     }, {
         key: "getWindowCaption",
         value: function getWindowCaption() {
-            return 'VB Editor';
+            return 'Workspace';
         }
     }, {
         key: "onClear",
@@ -3893,7 +4158,7 @@ var WorkspaceWindow = function (_abstract_window_1$Ab) {
 
 exports.WorkspaceWindow = WorkspaceWindow;
 
-},{"../../../qkwidgets/managers/basic_manager":14,"../../../qkwidgets/ui/splitpane/hsplit_pane":22,"../../../qkwidgets/ui/widgets/basic_button_bar":33,"../../../qkwidgets/ui/widgets/fields/text_area":40,"../../../qkwidgets/ui/widgets/iframe/monaco_editor":47,"../../../qkwidgets/ui/windows/abstract_window":55}],63:[function(require,module,exports){
+},{"../../../qkwidgets/managers/basic_manager":16,"../../../qkwidgets/ui/splitpane/hsplit_pane":24,"../../../qkwidgets/ui/widgets/basic_button_bar":35,"../../../qkwidgets/ui/widgets/fields/text_area":42,"../../../qkwidgets/ui/widgets/iframe/monaco_editor":49,"../../../qkwidgets/ui/windows/abstract_window":57}],65:[function(require,module,exports){
 /// <reference path='../../../qkwidgets/types/qooxdoo.d.ts' />
 "use strict";
 
@@ -3991,7 +4256,7 @@ var ClassBrowserWindow = function (_abstract_window_1$Ab) {
 
 exports.ClassBrowserWindow = ClassBrowserWindow;
 
-},{"../../../qkwidgets/managers/basic_manager":14,"../../../qkwidgets/ui/widgets/class_browser_button_bar":35,"../../../qkwidgets/ui/widgets/tree_widget":54,"../../../qkwidgets/ui/windows/abstract_window":55}],64:[function(require,module,exports){
+},{"../../../qkwidgets/managers/basic_manager":16,"../../../qkwidgets/ui/widgets/class_browser_button_bar":37,"../../../qkwidgets/ui/widgets/tree_widget":56,"../../../qkwidgets/ui/windows/abstract_window":57}],66:[function(require,module,exports){
 /// <reference path='../../../qkwidgets/types/qooxdoo.d.ts' />
 "use strict";
 
@@ -4151,6 +4416,6 @@ var ScriptBrowserWindow = function (_abstract_window_1$Ab) {
 
 exports.ScriptBrowserWindow = ScriptBrowserWindow;
 
-},{"../../../qkwidgets/managers/basic_manager":14,"../../../qkwidgets/managers/file_manager":15,"../../../qkwidgets/ui/splitpane/hsplit_pane":22,"../../../qkwidgets/ui/widgets/grid_widget":45,"../../../qkwidgets/ui/widgets/iframe/monaco_editor":47,"../../../qkwidgets/ui/widgets/script_browser_button_bar":52,"../../../qkwidgets/ui/windows/abstract_window":55}]},{},[2])
+},{"../../../qkwidgets/managers/basic_manager":16,"../../../qkwidgets/managers/file_manager":17,"../../../qkwidgets/ui/splitpane/hsplit_pane":24,"../../../qkwidgets/ui/widgets/grid_widget":47,"../../../qkwidgets/ui/widgets/iframe/monaco_editor":49,"../../../qkwidgets/ui/widgets/script_browser_button_bar":54,"../../../qkwidgets/ui/windows/abstract_window":57}]},{},[2])
 
 //# sourceMappingURL=app.js.map
