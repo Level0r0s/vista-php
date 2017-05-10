@@ -13,8 +13,10 @@ class compiler_Compiler {
 		$procedure->generate($bytecodes, $util);
 		return new compiler_CompiledMethod($bytecodes, $util->literals);
 	}
-	static function compileScript($script) {
-		return _hx_deref(new compiler_Compiler())->compileFromScript($script);
+	static function compileScript($src) {
+		$compilerMethod = _hx_deref(new compiler_Compiler())->compileFromScript($src);
+		$compilerMethod->src = $src;
+		return $compilerMethod;
 	}
 	function __toString() { return 'compiler.Compiler'; }
 }

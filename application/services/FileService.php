@@ -31,6 +31,7 @@ class FileService  {
                             array_push($fnames, $fname);
                         closedir($dh);
                     }
+                    sort($fnames);
                     return $fnames;
                 }
                 

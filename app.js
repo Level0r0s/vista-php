@@ -34,7 +34,7 @@ var Main = function () {
 exports.Main = Main;
 applib.Application.startupFunction = Main.run;
 
-},{"./ui/viewport/viewport":59}],3:[function(require,module,exports){
+},{"./ui/viewport/viewport":61}],3:[function(require,module,exports){
 /// <reference path="../../qkwidgets/types/qooxdoo.d.ts" />
 "use strict";
 
@@ -71,6 +71,13 @@ var Rest = function () {
             var fn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
 
             this.getInstance().evalScript(script, fn);
+        }
+    }, {
+        key: "getClassNames",
+        value: function getClassNames() {
+            var fn = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+
+            this.getInstance().getClassNames(fn);
         }
     }, {
         key: "getModel",
@@ -199,7 +206,14 @@ var Rest = function () {
         key: "evalScript",
         value: function evalScript(script, fn) {
             var req = this.createGetRequest('index.php/rpc');
-            var data = { service: 'basic', script: script };
+            var data = { service: 'basic', method: 'evalScript', script: script };
+            this.sendRequest(req, data, fn);
+        }
+    }, {
+        key: "getClassNames",
+        value: function getClassNames(fn) {
+            var req = this.createGetRequest('index.php/rpc');
+            var data = { service: 'basic', method: 'classNames' };
             this.sendRequest(req, data, fn);
         }
     }, {
@@ -507,6 +521,13 @@ var BasicManager = function () {
                 }
             });
         }
+    }, {
+        key: "get_class_names",
+        value: function get_class_names(fn, scope) {
+            rest_1.Rest.getClassNames(function (reply) {
+                if (fn) fn.call(scope, reply);
+            });
+        }
     }], [{
         key: "getInstance",
         value: function getInstance() {
@@ -522,6 +543,14 @@ var BasicManager = function () {
             var scope = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
 
             this.getInstance().eval_script(script, fn, scope);
+        }
+    }, {
+        key: "get_class_names",
+        value: function get_class_names() {
+            var fn = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+            var scope = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+
+            this.getInstance().get_class_names(fn, scope);
         }
     }]);
 
@@ -870,7 +899,7 @@ var ServiceManager = function () {
 
 exports.ServiceManager = ServiceManager;
 
-},{"../ui/splitpane/hsplit_pane":22,"../ui/splitpane/vsplit_pane":24,"../ui/tabview/tab_page":25,"../ui/tabview/tab_view":26,"../ui/widgets/iframe/monaco_editor":46,"../ui/widgets/iframe/paper":47,"../ui/widgets/iframe/tinymce":48,"../ui/windows/abstract_window":53}],18:[function(require,module,exports){
+},{"../ui/splitpane/hsplit_pane":22,"../ui/splitpane/vsplit_pane":24,"../ui/tabview/tab_page":25,"../ui/tabview/tab_view":26,"../ui/widgets/iframe/monaco_editor":47,"../ui/widgets/iframe/paper":48,"../ui/widgets/iframe/tinymce":49,"../ui/windows/abstract_window":55}],18:[function(require,module,exports){
 /// <reference path="../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -1660,7 +1689,7 @@ var NavbarLogin = function (_SplitButton) {
 
 exports.NavbarLogin = NavbarLogin;
 
-},{"../../../constants/image_constants":6,"../../../constants/qx_constants":9,"../../../constants/session_messages":10,"../../../constants/session_state":11,"../../../constants/style_constants":12,"../../../managers/session_manager":18,"../../widgets/menu_button":49,"../../windows/form/session/login_window":55,"../../windows/form/session/register_window":56,"../../windows/form/session/settings_window":57}],31:[function(require,module,exports){
+},{"../../../constants/image_constants":6,"../../../constants/qx_constants":9,"../../../constants/session_messages":10,"../../../constants/session_state":11,"../../../constants/style_constants":12,"../../../managers/session_manager":18,"../../widgets/menu_button":50,"../../windows/form/session/login_window":57,"../../windows/form/session/register_window":58,"../../windows/form/session/settings_window":59}],31:[function(require,module,exports){
 /// <reference path="../../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -1866,7 +1895,7 @@ var BasicButtonBar = function (_simple_button_bar_1$) {
 
 exports.BasicButtonBar = BasicButtonBar;
 
-},{"./menubar_button":50,"./simple_button_bar":52}],34:[function(require,module,exports){
+},{"./menubar_button":51,"./simple_button_bar":53}],34:[function(require,module,exports){
 /// <reference path="../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -1934,6 +1963,59 @@ var Button = function (_QxButton) {
 exports.Button = Button;
 
 },{"../../constants/button_type":4,"../../constants/qx_constants":9,"../../constants/style_constants":12}],35:[function(require,module,exports){
+/// <reference path="../../types/qooxdoo.d.ts" />
+"use strict";
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var menubar_button_1 = require("./menubar_button");
+var simple_button_bar_1 = require("./simple_button_bar");
+
+var ClassBrowserButtonBar = function (_simple_button_bar_1$) {
+    _inherits(ClassBrowserButtonBar, _simple_button_bar_1$);
+
+    function ClassBrowserButtonBar(window) {
+        _classCallCheck(this, ClassBrowserButtonBar);
+
+        var _this = _possibleConstructorReturn(this, (ClassBrowserButtonBar.__proto__ || Object.getPrototypeOf(ClassBrowserButtonBar)).call(this));
+
+        _this.window = window;
+        _this.addButtons();
+        return _this;
+    }
+
+    _createClass(ClassBrowserButtonBar, [{
+        key: "addButtons",
+        value: function addButtons() {
+            this.createButtons();
+            this.add(this.refresh_btn);
+        }
+    }, {
+        key: "createButtons",
+        value: function createButtons() {
+            this.refresh_btn = this.createButton('Refresh', this.window.onRefresh);
+        }
+    }, {
+        key: "createButton",
+        value: function createButton(text, fn) {
+            var html = this.getButtonHtml(text);
+            return new menubar_button_1.MenubarButton(html, fn, this.window);
+        }
+    }]);
+
+    return ClassBrowserButtonBar;
+}(simple_button_bar_1.SimpleButtonBar);
+
+exports.ClassBrowserButtonBar = ClassBrowserButtonBar;
+
+},{"./menubar_button":51,"./simple_button_bar":53}],36:[function(require,module,exports){
 /// <reference path="../../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -1977,7 +2059,7 @@ var CheckBox = function (_QxCheckBox) {
 
 exports.CheckBox = CheckBox;
 
-},{}],36:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 /// <reference path="../../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -2026,7 +2108,7 @@ var DateField = function (_QxDateField) {
 
 exports.DateField = DateField;
 
-},{}],37:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 /// <reference path="../../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -2062,7 +2144,7 @@ var PasswordField = function (_QxPasswordField) {
 
 exports.PasswordField = PasswordField;
 
-},{}],38:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 /// <reference path="../../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -2207,7 +2289,7 @@ var RadioButtonGroup = function (_QxRadioButtonGroup) {
 
 exports.RadioButtonGroup = RadioButtonGroup;
 
-},{}],39:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
 /// <reference path="../../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -2243,7 +2325,7 @@ var TextArea = function (_QxTextArea) {
 
 exports.TextArea = TextArea;
 
-},{}],40:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 /// <reference path="../../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -2279,7 +2361,7 @@ var TextField = function (_QxTextField) {
 
 exports.TextField = TextField;
 
-},{}],41:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 /// <reference path="../../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -2425,7 +2507,7 @@ var AbstractForm = function (_Scroll) {
 
 exports.AbstractForm = AbstractForm;
 
-},{"../fields/check_box":35,"../fields/date_field":36,"../fields/password_field":37,"../fields/radio_button_group":38,"../fields/text_area":39,"../fields/text_field":40}],42:[function(require,module,exports){
+},{"../fields/check_box":36,"../fields/date_field":37,"../fields/password_field":38,"../fields/radio_button_group":39,"../fields/text_area":40,"../fields/text_field":41}],43:[function(require,module,exports){
 /// <reference path="../../../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -2491,7 +2573,7 @@ var LoginForm = function (_abstract_form_1$Abst) {
 
 exports.LoginForm = LoginForm;
 
-},{"../../../../constants/button_type":4,"../../button":34,"../abstract_form":41}],43:[function(require,module,exports){
+},{"../../../../constants/button_type":4,"../../button":34,"../abstract_form":42}],44:[function(require,module,exports){
 /// <reference path="../../../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -2561,7 +2643,7 @@ var RegisterForm = function (_abstract_form_1$Abst) {
 
 exports.RegisterForm = RegisterForm;
 
-},{"../../../../constants/button_type":4,"../../button":34,"../abstract_form":41}],44:[function(require,module,exports){
+},{"../../../../constants/button_type":4,"../../button":34,"../abstract_form":42}],45:[function(require,module,exports){
 /// <reference path="../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -2724,7 +2806,7 @@ var GridWidget = function (_Table) {
 
 exports.GridWidget = GridWidget;
 
-},{"../../constants/event_constants":5,"../../constants/qx_constants":9}],45:[function(require,module,exports){
+},{"../../constants/event_constants":5,"../../constants/qx_constants":9}],46:[function(require,module,exports){
 /// <reference path="../../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -2798,7 +2880,7 @@ var AbstractIFrame = function (_QxIFrame) {
 
 exports.AbstractIFrame = AbstractIFrame;
 
-},{"../../../constants/qx_constants":9}],46:[function(require,module,exports){
+},{"../../../constants/qx_constants":9}],47:[function(require,module,exports){
 /// <reference path="../../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -2850,7 +2932,7 @@ var MonacoEditor = function (_abstract_iframe_1$Ab) {
 
 exports.MonacoEditor = MonacoEditor;
 
-},{"../../../constants/monaco_editor_constants":7,"./abstract_iframe":45}],47:[function(require,module,exports){
+},{"../../../constants/monaco_editor_constants":7,"./abstract_iframe":46}],48:[function(require,module,exports){
 /// <reference path="../../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -2940,7 +3022,7 @@ var Paper = function (_abstract_iframe_1$Ab) {
 
 exports.Paper = Paper;
 
-},{"../../../constants/paper_constants":8,"./abstract_iframe":45}],48:[function(require,module,exports){
+},{"../../../constants/paper_constants":8,"./abstract_iframe":46}],49:[function(require,module,exports){
 /// <reference path="../../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -3011,7 +3093,7 @@ var TinyMce = function (_abstract_iframe_1$Ab) {
 
 exports.TinyMce = TinyMce;
 
-},{"../../../constants/tinymce_constants":13,"./abstract_iframe":45}],49:[function(require,module,exports){
+},{"../../../constants/tinymce_constants":13,"./abstract_iframe":46}],50:[function(require,module,exports){
 /// <reference path="../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -3047,7 +3129,7 @@ var MenuButton = function (_QxMenuButton) {
 
 exports.MenuButton = MenuButton;
 
-},{"../../constants/qx_constants":9}],50:[function(require,module,exports){
+},{"../../constants/qx_constants":9}],51:[function(require,module,exports){
 /// <reference path="../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -3084,7 +3166,7 @@ var MenubarButton = function (_QxMenubarButton) {
 
 exports.MenubarButton = MenubarButton;
 
-},{"../../constants/qx_constants":9}],51:[function(require,module,exports){
+},{"../../constants/qx_constants":9}],52:[function(require,module,exports){
 /// <reference path="../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -3139,7 +3221,7 @@ var ScriptBrowserButtonBar = function (_simple_button_bar_1$) {
 
 exports.ScriptBrowserButtonBar = ScriptBrowserButtonBar;
 
-},{"./menubar_button":50,"./simple_button_bar":52}],52:[function(require,module,exports){
+},{"./menubar_button":51,"./simple_button_bar":53}],53:[function(require,module,exports){
 /// <reference path="../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -3201,7 +3283,90 @@ var SimpleButtonBar = function (_Composite) {
 
 exports.SimpleButtonBar = SimpleButtonBar;
 
-},{"../../constants/style_constants":12}],53:[function(require,module,exports){
+},{"../../constants/style_constants":12}],54:[function(require,module,exports){
+/// <reference path="../../types/qooxdoo.d.ts" />
+"use strict";
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var Tree = qx.ui.tree.Tree;
+var TreeFile = qx.ui.tree.TreeFile;
+var TreeFolder = qx.ui.tree.TreeFolder;
+
+var TreeWidget = function (_Tree) {
+    _inherits(TreeWidget, _Tree);
+
+    function TreeWidget() {
+        _classCallCheck(this, TreeWidget);
+
+        return _possibleConstructorReturn(this, (TreeWidget.__proto__ || Object.getPrototypeOf(TreeWidget)).call(this));
+        // this.root = new TreeFolder('Object');
+        // this.root.add(new TreeFile('Behavior'));
+        // this.root.add(new TreeFile('Kernel'));
+    }
+
+    _createClass(TreeWidget, [{
+        key: "setData",
+        value: function setData(data) {
+            this.root = this.addNode(null, data);
+            this.setRoot(this.root);
+        }
+    }, {
+        key: "addNode",
+        value: function addNode(parent, array) {
+            if (array.length > 1) {
+                var node = new TreeFolder(array[0]);
+                if (parent != null) parent.add(node);
+                node.setOpen(true);
+                var i = 0;
+                var _iteratorNormalCompletion = true;
+                var _didIteratorError = false;
+                var _iteratorError = undefined;
+
+                try {
+                    for (var _iterator = array[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                        var child = _step.value;
+
+                        if (i++ == 0) continue;
+                        this.addNode(node, child);
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally {
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return) {
+                            _iterator.return();
+                        }
+                    } finally {
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+
+                return node;
+            } else {
+                var _node = new TreeFile(array[0]);
+                if (parent != null) parent.add(_node);
+                return _node;
+            }
+        }
+    }]);
+
+    return TreeWidget;
+}(Tree);
+
+exports.TreeWidget = TreeWidget;
+
+},{}],55:[function(require,module,exports){
 /// <reference path="../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -3312,7 +3477,7 @@ var AbstractWindow = function (_QxWindow) {
 
 exports.AbstractWindow = AbstractWindow;
 
-},{"../../constants/qx_constants":9,"../viewport/abstract_viewport":27}],54:[function(require,module,exports){
+},{"../../constants/qx_constants":9,"../viewport/abstract_viewport":27}],56:[function(require,module,exports){
 /// <reference path="../../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -3363,7 +3528,7 @@ var AbstractFormWindow = function (_abstract_window_1$Ab) {
 
 exports.AbstractFormWindow = AbstractFormWindow;
 
-},{"../../widgets/forms/abstract_form":41,"../abstract_window":53}],55:[function(require,module,exports){
+},{"../../widgets/forms/abstract_form":42,"../abstract_window":55}],57:[function(require,module,exports){
 /// <reference path="../../../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -3421,7 +3586,7 @@ var LoginWindow = function (_abstract_form_window) {
 
 exports.LoginWindow = LoginWindow;
 
-},{"../../../../managers/session_manager":18,"../../../widgets/forms/session/login_form":42,"../abstract_form_window":54}],56:[function(require,module,exports){
+},{"../../../../managers/session_manager":18,"../../../widgets/forms/session/login_form":43,"../abstract_form_window":56}],58:[function(require,module,exports){
 /// <reference path="../../../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -3474,7 +3639,7 @@ var RegisterWindow = function (_abstract_form_window) {
 
 exports.RegisterWindow = RegisterWindow;
 
-},{"../../../../managers/session_manager":18,"../../../widgets/forms/session/register_form":43,"../abstract_form_window":54}],57:[function(require,module,exports){
+},{"../../../../managers/session_manager":18,"../../../widgets/forms/session/register_form":44,"../abstract_form_window":56}],59:[function(require,module,exports){
 /// <reference path="../../../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -3510,7 +3675,7 @@ var SettingsWindow = function (_abstract_form_window) {
 
 exports.SettingsWindow = SettingsWindow;
 
-},{"../abstract_form_window":54}],58:[function(require,module,exports){
+},{"../abstract_form_window":56}],60:[function(require,module,exports){
 "use strict";
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -3523,7 +3688,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 Object.defineProperty(exports, "__esModule", { value: true });
 var abstract_navpanel_1 = require("../../../qkwidgets/ui/viewport/navpanel/abstract_navpanel");
-var editor_window_1 = require("../../windows/iframe/editor_window");
+var class_browser_window_1 = require("../../windows/tools/class_browser_window");
+var workspace_window_1 = require("../../windows/iframe/workspace_window");
 var script_browser_window_1 = require("../../windows/tools/script_browser_window");
 
 var Navpanel = function (_abstract_navpanel_1$) {
@@ -3538,24 +3704,31 @@ var Navpanel = function (_abstract_navpanel_1$) {
     _createClass(Navpanel, [{
         key: "addButtons",
         value: function addButtons() {
-            this.monacoEditorBtn = this.addPanelButton('VB Editor', this.onEditor);
+            this.classBrowserBtn = this.addPanelButton('Class Browser', this.onClassBrowser);
+            this.workspaceBtn = this.addPanelButton('Workspace', this.onWorkspace);
             this.fileBrowserBtn = this.addPanelButton('Script Browser', this.onFileBrowser);
         }
     }, {
         key: "setButtonsEnabled",
         value: function setButtonsEnabled(bool) {
+            this.classBrowserBtn.setEnabled(bool);
             this.fileBrowserBtn.setEnabled(bool);
-            this.monacoEditorBtn.setEnabled(bool);
+            this.workspaceBtn.setEnabled(bool);
         }
     }, {
-        key: "onEditor",
-        value: function onEditor() {
-            new editor_window_1.EditorWindow();
+        key: "onClassBrowser",
+        value: function onClassBrowser() {
+            new class_browser_window_1.ClassBrowserWindow();
         }
     }, {
         key: "onFileBrowser",
         value: function onFileBrowser() {
             new script_browser_window_1.ScriptBrowserWindow();
+        }
+    }, {
+        key: "onWorkspace",
+        value: function onWorkspace() {
+            new workspace_window_1.WorkspaceWindow();
         }
     }]);
 
@@ -3564,7 +3737,7 @@ var Navpanel = function (_abstract_navpanel_1$) {
 
 exports.Navpanel = Navpanel;
 
-},{"../../../qkwidgets/ui/viewport/navpanel/abstract_navpanel":32,"../../windows/iframe/editor_window":60,"../../windows/tools/script_browser_window":61}],59:[function(require,module,exports){
+},{"../../../qkwidgets/ui/viewport/navpanel/abstract_navpanel":32,"../../windows/iframe/workspace_window":62,"../../windows/tools/class_browser_window":63,"../../windows/tools/script_browser_window":64}],61:[function(require,module,exports){
 "use strict";
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -3606,7 +3779,7 @@ var Viewport = function (_abstract_viewport_1$) {
 
 exports.Viewport = Viewport;
 
-},{"../../constants/app_constants":1,"../../qkwidgets/ui/viewport/abstract_viewport":27,"./navpanel/navpanel":58}],60:[function(require,module,exports){
+},{"../../constants/app_constants":1,"../../qkwidgets/ui/viewport/abstract_viewport":27,"./navpanel/navpanel":60}],62:[function(require,module,exports){
 /// <reference path="../../../qkwidgets/types/qooxdoo.d.ts" />
 "use strict";
 
@@ -3628,21 +3801,21 @@ var hsplit_pane_1 = require("../../../qkwidgets/ui/splitpane/hsplit_pane");
 var monaco_editor_1 = require("../../../qkwidgets/ui/widgets/iframe/monaco_editor");
 var text_area_1 = require("../../../qkwidgets/ui/widgets/fields/text_area");
 
-var EditorWindow = function (_abstract_window_1$Ab) {
-    _inherits(EditorWindow, _abstract_window_1$Ab);
+var WorkspaceWindow = function (_abstract_window_1$Ab) {
+    _inherits(WorkspaceWindow, _abstract_window_1$Ab);
 
-    function EditorWindow() {
-        _classCallCheck(this, EditorWindow);
+    function WorkspaceWindow() {
+        _classCallCheck(this, WorkspaceWindow);
 
-        return _possibleConstructorReturn(this, (EditorWindow.__proto__ || Object.getPrototypeOf(EditorWindow)).apply(this, arguments));
+        return _possibleConstructorReturn(this, (WorkspaceWindow.__proto__ || Object.getPrototypeOf(WorkspaceWindow)).apply(this, arguments));
     }
 
-    _createClass(EditorWindow, [{
+    _createClass(WorkspaceWindow, [{
         key: "init",
         value: function init() {
             this.editor = new monaco_editor_1.MonacoEditor();
             this.output = new text_area_1.TextArea();
-            _get(EditorWindow.prototype.__proto__ || Object.getPrototypeOf(EditorWindow.prototype), "init", this).call(this);
+            _get(WorkspaceWindow.prototype.__proto__ || Object.getPrototypeOf(WorkspaceWindow.prototype), "init", this).call(this);
         }
     }, {
         key: "addButtons",
@@ -3715,12 +3888,110 @@ var EditorWindow = function (_abstract_window_1$Ab) {
         }
     }]);
 
-    return EditorWindow;
+    return WorkspaceWindow;
 }(abstract_window_1.AbstractWindow);
 
-exports.EditorWindow = EditorWindow;
+exports.WorkspaceWindow = WorkspaceWindow;
 
-},{"../../../qkwidgets/managers/basic_manager":14,"../../../qkwidgets/ui/splitpane/hsplit_pane":22,"../../../qkwidgets/ui/widgets/basic_button_bar":33,"../../../qkwidgets/ui/widgets/fields/text_area":39,"../../../qkwidgets/ui/widgets/iframe/monaco_editor":46,"../../../qkwidgets/ui/windows/abstract_window":53}],61:[function(require,module,exports){
+},{"../../../qkwidgets/managers/basic_manager":14,"../../../qkwidgets/ui/splitpane/hsplit_pane":22,"../../../qkwidgets/ui/widgets/basic_button_bar":33,"../../../qkwidgets/ui/widgets/fields/text_area":40,"../../../qkwidgets/ui/widgets/iframe/monaco_editor":47,"../../../qkwidgets/ui/windows/abstract_window":55}],63:[function(require,module,exports){
+/// <reference path='../../../qkwidgets/types/qooxdoo.d.ts' />
+"use strict";
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var abstract_window_1 = require("../../../qkwidgets/ui/windows/abstract_window");
+var basic_manager_1 = require("../../../qkwidgets/managers/basic_manager");
+var class_browser_button_bar_1 = require("../../../qkwidgets/ui/widgets/class_browser_button_bar");
+var tree_widget_1 = require("../../../qkwidgets/ui/widgets/tree_widget");
+
+var ClassBrowserWindow = function (_abstract_window_1$Ab) {
+    _inherits(ClassBrowserWindow, _abstract_window_1$Ab);
+
+    function ClassBrowserWindow() {
+        _classCallCheck(this, ClassBrowserWindow);
+
+        return _possibleConstructorReturn(this, (ClassBrowserWindow.__proto__ || Object.getPrototypeOf(ClassBrowserWindow)).apply(this, arguments));
+    }
+
+    _createClass(ClassBrowserWindow, [{
+        key: "init",
+        value: function init() {
+            _get(ClassBrowserWindow.prototype.__proto__ || Object.getPrototypeOf(ClassBrowserWindow.prototype), "init", this).call(this);
+        }
+    }, {
+        key: "addButtons",
+        value: function addButtons() {
+            this.buttonBar = new class_browser_button_bar_1.ClassBrowserButtonBar(this);
+            this.add(this.buttonBar, { edge: 'south' });
+        }
+    }, {
+        key: "addContent",
+        value: function addContent() {
+            this.treeWidget = new tree_widget_1.TreeWidget();
+            this.add(this.treeWidget, { edge: 'center' });
+        }
+    }, {
+        key: "autoShow",
+        value: function autoShow() {
+            return true;
+        }
+    }, {
+        key: "getDefaultCentered",
+        value: function getDefaultCentered() {
+            return true;
+        }
+    }, {
+        key: "getDefaultHeight",
+        value: function getDefaultHeight() {
+            return 475;
+        }
+    }, {
+        key: "getDefaultWidth",
+        value: function getDefaultWidth() {
+            return 575;
+        }
+    }, {
+        key: "getWindowCaption",
+        value: function getWindowCaption() {
+            return 'Class Browser';
+        }
+    }, {
+        key: "getGridColumnNames",
+        value: function getGridColumnNames() {
+            return ['fname'];
+        }
+    }, {
+        key: "getGridColumnTitles",
+        value: function getGridColumnTitles() {
+            return ['Name'];
+        }
+    }, {
+        key: "onRefresh",
+        value: function onRefresh() {
+            basic_manager_1.BasicManager.get_class_names(this.onRefreshClasses, this);
+        }
+    }, {
+        key: "onRefreshClasses",
+        value: function onRefreshClasses(reply) {
+            this.treeWidget.setData(reply);
+        }
+    }]);
+
+    return ClassBrowserWindow;
+}(abstract_window_1.AbstractWindow);
+
+exports.ClassBrowserWindow = ClassBrowserWindow;
+
+},{"../../../qkwidgets/managers/basic_manager":14,"../../../qkwidgets/ui/widgets/class_browser_button_bar":35,"../../../qkwidgets/ui/widgets/tree_widget":54,"../../../qkwidgets/ui/windows/abstract_window":55}],64:[function(require,module,exports){
 /// <reference path='../../../qkwidgets/types/qooxdoo.d.ts' />
 "use strict";
 
@@ -3880,6 +4151,6 @@ var ScriptBrowserWindow = function (_abstract_window_1$Ab) {
 
 exports.ScriptBrowserWindow = ScriptBrowserWindow;
 
-},{"../../../qkwidgets/managers/basic_manager":14,"../../../qkwidgets/managers/file_manager":15,"../../../qkwidgets/ui/splitpane/hsplit_pane":22,"../../../qkwidgets/ui/widgets/grid_widget":44,"../../../qkwidgets/ui/widgets/iframe/monaco_editor":46,"../../../qkwidgets/ui/widgets/script_browser_button_bar":51,"../../../qkwidgets/ui/windows/abstract_window":53}]},{},[2])
+},{"../../../qkwidgets/managers/basic_manager":14,"../../../qkwidgets/managers/file_manager":15,"../../../qkwidgets/ui/splitpane/hsplit_pane":22,"../../../qkwidgets/ui/widgets/grid_widget":45,"../../../qkwidgets/ui/widgets/iframe/monaco_editor":47,"../../../qkwidgets/ui/widgets/script_browser_button_bar":52,"../../../qkwidgets/ui/windows/abstract_window":55}]},{},[2])
 
 //# sourceMappingURL=app.js.map

@@ -9,7 +9,9 @@ class Vb {
 	static function runScript($fname) {
 		$path = "./vb/" . _hx_string_or_null($fname) . ".vb";
 		$script = sys_io_File::getContent($path);
-		runtime_Vm::evalScript($script, null);
+		$tmp = (property_exists("haxe_Log", "trace") ? haxe_Log::$trace: array("haxe_Log", "trace"));
+		$tmp1 = runtime_Vm::classNames(null);
+		call_user_func_array($tmp, array($tmp1, _hx_anonymous(array("fileName" => "Vb.hx", "lineNumber" => 13, "className" => "Vb", "methodName" => "runScript"))));
 	}
 	function __toString() { return 'Vb'; }
 }

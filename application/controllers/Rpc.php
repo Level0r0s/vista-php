@@ -11,14 +11,16 @@ class Rpc extends CI_Controller {
         $method = $this->get_input('method', '');
         $args = $this->input->get();
         switch($service) {
+            case 'basic':
+                $service = new BasicService();
+                $reply = $service->performMethod($this->session, $method, $args);
+                break;
             case 'file':
                 $service = new FileService();
                 $reply = $service->performMethod($method, $args);
                 break;
             default:
-                $script = $this->get_input('script', 'print "no input"');
-                $service = new BasicService();
-                $reply = $service->evalScript($script, $this->session);
+                $reply = "service [$service] not found";
                 break;
     }
     $this->output
