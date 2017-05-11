@@ -10,8 +10,8 @@ class runtime_functions_Builtins extends runtime_process_ProcessBase {
 		$object = $this->getObjectName($objectName);
 		if($object !== null) {
 			$object->callFn($fnName, $args, $map);
-			$tmp = $map->get("action");
-			$this->actionOutput($object, $tmp, $map->get("args"), true);
+			$args1 = $map->get("args");
+			$this->actionOutput($object, $map->get("action"), $args1, true);
 			return $fnName;
 		} else {
 			return "object " . _hx_string_or_null($objectName) . " not found";
@@ -79,7 +79,7 @@ class runtime_functions_Builtins extends runtime_process_ProcessBase {
 		$object = $this->getObjectName($objectName);
 		if($object !== null) {
 			$object->setProperty($propertyName, $val, $map);
-			$args = php_Lib::toPhpArray((new _hx_array(array($map->get("args")))));
+			$args = (new _hx_array(array($map->get("args"))));
 			$this->actionOutput($object, $map->get("action"), $args, null);
 			return $propertyName;
 		} else {

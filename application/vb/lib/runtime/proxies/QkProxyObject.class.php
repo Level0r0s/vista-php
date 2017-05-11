@@ -10,7 +10,7 @@ class runtime_proxies_QkProxyObject extends runtime_proxies_QkObject {
 	public $proxyId;
 	public function callFn($functionName, $args, $map) {
 		$map->set("action", $functionName);
-		$map->set("args", php_Lib::toPhpArray($args));
+		$map->set("args", $args);
 	}
 	public function getId() {
 		return $this->proxyId;

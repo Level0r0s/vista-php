@@ -173,6 +173,11 @@ var Node = function () {
             return this.fs;
         }
     }, {
+        key: "getVm",
+        value: function getVm() {
+            return runtime.Vm;
+        }
+    }, {
         key: "getInstance",
         value: function getInstance() {
             if (!this.instance) {
@@ -193,14 +198,17 @@ var Node = function () {
         value: function evalScript(script) {
             var fn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
 
-            console.log('Node: evalScript');
+            console.log('EVAL SCRIPT', script);
+            var reply = this.getVm().evalScript(script)[0];
+            if (fn) fn.call(null, [reply]);
         }
     }, {
         key: "getClassNames",
         value: function getClassNames() {
             var fn = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
 
-            console.log('Node: getClassNames');
+            var classNames = this.getVm().classNames()[0];
+            if (fn) fn.call(null, classNames);
         }
     }, {
         key: "getModel",

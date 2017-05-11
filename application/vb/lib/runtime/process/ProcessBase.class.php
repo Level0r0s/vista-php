@@ -49,8 +49,9 @@ class runtime_process_ProcessBase {
 		if($afterAppear === null) {
 			$afterAppear = false;
 		}
-		$payload = _hx_anonymous(array("service" => "action", "id" => $object->getId(), "action" => $action, "args" => $args, "afterAppear" => $afterAppear));
-		$this->pushOutput($payload);
+		$payload = $object->getId();
+		$payload1 = _hx_anonymous(array("service" => "action", "id" => $payload, "action" => $action, "args" => util_ArrayUtil::normalizeArray($args), "afterAppear" => $afterAppear));
+		$this->pushOutput($payload1);
 	}
 	public function hgoto($n) {
 		$this->pc = $n;
