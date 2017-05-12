@@ -13,6 +13,9 @@ class parser_nodes_BlockNode extends parser_nodes_ParseNode {
 	public function addStmt($stmt) {
 		$this->stmts->push($stmt);
 	}
+	public function asBlockNode() {
+		return $this;
+	}
 	public function atEnd() {
 		return $this->exitFlag;
 	}

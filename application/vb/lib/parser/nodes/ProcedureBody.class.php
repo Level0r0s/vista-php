@@ -13,7 +13,7 @@ class parser_nodes_ProcedureBody extends parser_nodes_ParseNode {
 	}
 	public function toString() {
 		$sbstr = $this->statementBlock->toString();
-		return "ProcedureBody(" . _hx_string_or_null($sbstr) . ")";
+		return "MethodNode(" . _hx_string_or_null($sbstr) . ")";
 	}
 	public function __call($m, $a) {
 		if(isset($this->$m) && is_callable($this->$m))

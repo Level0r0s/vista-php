@@ -20,12 +20,14 @@ class constants_Opcode {
 	static $Pop = 15;
 	static $PopIntoGlobal = 16;
 	static $PopIntoProperty = 17;
-	static $PushConst = 18;
-	static $PushGlobal = 19;
-	static $PushProperty = 20;
-	static $SubCall = 21;
-	static $SubDefine = 22;
-	static $SubReturn = 23;
-	static $Times = 24;
+	static $PushClass = 18;
+	static $PushConst = 19;
+	static $PushGlobal = 20;
+	static $PushProperty = 21;
+	static $PushStdModule = 22;
+	static $SubCall = 23;
+	static $SubDefine = 24;
+	static $SubReturn = 25;
+	static $Times = 26;
 	function __toString() { return 'constants.Opcode'; }
 }

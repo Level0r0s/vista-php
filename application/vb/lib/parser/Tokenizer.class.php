@@ -63,6 +63,9 @@ class parser_Tokenizer extends util_ReadStream {
 		case "canvas":{
 			return $this->createToken($lcval, constants_TokenType::$KwCanvas);
 		}break;
+		case "class":{
+			return $this->createToken($lcval, constants_TokenType::$KwClass);
+		}break;
 		case "database":{
 			return $this->createToken($lcval, constants_TokenType::$KwDatabase);
 		}break;
@@ -92,6 +95,12 @@ class parser_Tokenizer extends util_ReadStream {
 		}break;
 		case "listpanel":{
 			return $this->createToken($lcval, constants_TokenType::$KwListPanel);
+		}break;
+		case "module":{
+			return $this->createToken($lcval, constants_TokenType::$KwModule);
+		}break;
+		case "public":{
+			return $this->createToken($lcval, constants_TokenType::$KwPublic);
 		}break;
 		case "richeditor":{
 			return $this->createToken($lcval, constants_TokenType::$KwRichEditor);

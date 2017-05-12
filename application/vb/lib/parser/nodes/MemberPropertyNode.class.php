@@ -17,7 +17,7 @@ class parser_nodes_MemberPropertyNode extends parser_nodes_ParseNode {
 			$this->value->generate($bytecodes, $util);
 			$bytecodes->push(17);
 		} else {
-			$bytecodes->push(20);
+			$bytecodes->push(21);
 		}
 		$bytecodes->push($util->encodeLiteral($this->objectName));
 		$bytecodes->push($util->encodeLiteral($this->propertyName));

@@ -15,7 +15,7 @@ class parser_Parser extends parser_ParserUtil {
 		$this->pushBlockContext();
 		$this->resetTokens();
 		$this->blockStatements();
-		return new parser_nodes_ProcedureBody($this->popContext());
+		return new parser_nodes_MethodNode($this->popContext()->asBlockNode());
 	}
 	public function blockStatements() {
 		while(!$this->exitContext()) {
@@ -73,6 +73,25 @@ class parser_Parser extends parser_ParserUtil {
 			$this->addStatement($statement);
 		}
 		return $statement !== null;
+	}
+	public function classStatement() {
+		$this->mark();
+		$this->consumeIfPublic();
+		$tmp = null;
+		if($this->isKwClass(null)) {
+			$tmp = $this->isName(1);
+		} else {
+			$tmp = false;
+		}
+		if(!$tmp) {
+			$this->rewind();
+			return false;
+		}
+		$this->unmark();
+		$this->advance(null);
+		$name = $this->nameNode();
+		$this->log("declare class " . Std::string($name));
+		return true;
 	}
 	public function controlStatement() {
 		if(!$this->ifStatement()) {
@@ -321,6 +340,20 @@ class parser_Parser extends parser_ParserUtil {
 	public function elseIfStatement() {
 		return false;
 	}
+	public function endClassStatement() {
+		$tmp = null;
+		if($this->isKwEnd(null)) {
+			$tmp = $this->isKwClass(1);
+		} else {
+			$tmp = false;
+		}
+		if(!$tmp) {
+			return false;
+		}
+		$this->log("end class");
+		$this->advance(2);
+		return true;
+	}
 	public function endIfStatement() {
 		$tmp = null;
 		if($this->isKwEnd(null)) {
@@ -335,7 +368,21 @@ class parser_Parser extends parser_ParserUtil {
 		$this->addStatement($this->popContext());
 		return true;
 	}
-	public function endSubStatement() {
+	public function endModuleStatement() {
+		$tmp = null;
+		if($this->isKwEnd(null)) {
+			$tmp = $this->isKwModule(1);
+		} else {
+			$tmp = false;
+		}
+		if(!$tmp) {
+			return false;
+		}
+		$this->advance(2);
+		$this->addStatement($this->popContext());
+		return true;
+	}
+	public function endSubroutineStatement() {
 		$tmp = null;
 		if($this->isKwEnd(null)) {
 			$tmp = $this->isKwSub(1);
@@ -410,6 +457,24 @@ class parser_Parser extends parser_ParserUtil {
 		$this->addStatement($expression);
 		return true;
 	}
+	public function moduleStatement() {
+		$this->mark();
+		$this->consumeIfPublic();
+		$tmp = null;
+		if($this->isKwModule(null)) {
+			$tmp = $this->isName(1);
+		} else {
+			$tmp = false;
+		}
+		if(!$tmp) {
+			$this->rewind();
+			return false;
+		}
+		$this->unmark();
+		$this->advance(null);
+		$this->pushStdModuleContext($this->nameNode());
+		return true;
+	}
 	public function onGoSubStatement() {
 		return false;
 	}
@@ -441,13 +506,37 @@ class parser_Parser extends parser_ParserUtil {
 	}
 	public function specialStatement() {
 		$tmp = null;
-		if(!$this->endSubStatement()) {
+		$tmp1 = null;
+		$tmp2 = null;
+		$tmp3 = null;
+		$tmp4 = null;
+		if(!$this->classStatement()) {
+			$tmp4 = $this->endClassStatement();
+		} else {
+			$tmp4 = true;
+		}
+		if(!$tmp4) {
+			$tmp3 = $this->endModuleStatement();
+		} else {
+			$tmp3 = true;
+		}
+		if(!$tmp3) {
+			$tmp2 = $this->endSubroutineStatement();
+		} else {
+			$tmp2 = true;
+		}
+		if(!$tmp2) {
+			$tmp1 = $this->moduleStatement();
+		} else {
+			$tmp1 = true;
+		}
+		if(!$tmp1) {
 			$tmp = $this->printStatement();
 		} else {
 			$tmp = true;
 		}
 		if(!$tmp) {
-			return $this->subStatement();
+			return $this->subroutineStatement();
 		} else {
 			return true;
 		}
@@ -489,7 +578,9 @@ class parser_Parser extends parser_ParserUtil {
 	public function stopStatement() {
 		return false;
 	}
-	public function subStatement() {
+	public function subroutineStatement() {
+		$this->mark();
+		$this->consumeIfPublic();
 		$tmp = null;
 		$tmp1 = null;
 		$tmp2 = null;
@@ -509,12 +600,13 @@ class parser_Parser extends parser_ParserUtil {
 			$tmp = false;
 		}
 		if(!$tmp) {
+			$this->rewind();
 			return false;
 		}
+		$this->unmark();
 		$this->advance(null);
-		$name = $this->nameNode();
+		$this->pushSubroutineContext($this->nameNode());
 		$this->advance(2);
-		$this->pushSubContext($name);
 		return true;
 	}
 	public function untilStatement() {
@@ -711,6 +803,19 @@ class parser_Parser extends parser_ParserUtil {
 		}
 		$this->consumeType(constants_TokenType::$Rp);
 		return $args;
+	}
+	public function consumeIfPublic() {
+		if($this->isKwPublic(null)) {
+			$this->consumeToken();
+			return true;
+		} else {
+			return false;
+		}
+	}
+	public function log($msg) {
+		$tmp = new parser_nodes_NameNode("print");
+		$tmp1 = $this->callNode($tmp, (new _hx_array(array(new parser_nodes_LiteralNode($msg)))));
+		$this->addStatement($tmp1);
 	}
 	static function parse($src) {
 		$parser1 = new parser_Parser();

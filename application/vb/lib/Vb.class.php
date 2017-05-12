@@ -6,6 +6,7 @@ class Vb {
 	static function main() {
 		runtime_loader_ObjectBuilder::init();
 		haxe_Log::trace("VB initialized", _hx_anonymous(array("fileName" => "Vb.hx", "lineNumber" => 11, "className" => "Vb", "methodName" => "main")));
+		Vb::runScript("module");
 	}
 	static function getScript($fname) {
 		$path = "./vb/" . _hx_string_or_null($fname) . ".vb";
@@ -15,7 +16,7 @@ class Vb {
 		$script = Vb::getScript($fname);
 		$tmp = (property_exists("haxe_Log", "trace") ? haxe_Log::$trace: array("haxe_Log", "trace"));
 		$tmp1 = Std::string(_hx_array_get(runtime_Vm::evalScript($script, null), 0));
-		call_user_func_array($tmp, array($tmp1, _hx_anonymous(array("fileName" => "Vb.hx", "lineNumber" => 26, "className" => "Vb", "methodName" => "runScript"))));
+		call_user_func_array($tmp, array($tmp1, _hx_anonymous(array("fileName" => "Vb.hx", "lineNumber" => 28, "className" => "Vb", "methodName" => "runScript"))));
 	}
 	function __toString() { return 'Vb'; }
 }

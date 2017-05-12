@@ -13,9 +13,25 @@ class parser_nodes_ParseNode {
 			unset($arg);
 		}
 	}
+	public function addStmt($stmt) {}
+	public function asBlockNode() {
+		return null;
+	}
+	public function asSubroutineNode() {
+		return null;
+	}
+	public function atEnd() {
+		return false;
+	}
 	public function generate($bytecodes, $util) {}
 	public function getName() {
 		return "";
+	}
+	public function isModule() {
+		return false;
+	}
+	public function isSubroutine() {
+		return false;
 	}
 	public function toString() {
 		return "a ParseNode";

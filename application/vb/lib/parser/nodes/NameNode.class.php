@@ -12,7 +12,7 @@ class parser_nodes_NameNode extends parser_nodes_ParseNode {
 	public $name;
 	public function generate($bytecodes, $util) {
 		if($this->{"global"}) {
-			$bytecodes->push(19);
+			$bytecodes->push(20);
 		}
 		$bytecodes->push($util->encodeLiteral($this->name));
 	}

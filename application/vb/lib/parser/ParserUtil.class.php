@@ -28,7 +28,7 @@ class parser_ParserUtil {
 		return new parser_nodes_InfixNode($arg1, $type, $arg2);
 	}
 	public function literalNode() {
-		return new parser_nodes_LiteralNode($this->consumeToken());
+		return new parser_nodes_LiteralNode($this->consumeToken()->val);
 	}
 	public function nameNode() {
 		return new parser_nodes_NameNode($this->consumeValue());
@@ -214,6 +214,12 @@ class parser_ParserUtil {
 		}
 		return $this->isType(constants_TokenType::$KwAs, $n);
 	}
+	public function isKwClass($n = null) {
+		if($n === null) {
+			$n = 0;
+		}
+		return $this->isType(constants_TokenType::$KwClass, $n);
+	}
 	public function isKwDim($n = null) {
 		if($n === null) {
 			$n = 0;
@@ -249,6 +255,18 @@ class parser_ParserUtil {
 			$n = 0;
 		}
 		return $this->isType(constants_TokenType::$KwIf, $n);
+	}
+	public function isKwModule($n = null) {
+		if($n === null) {
+			$n = 0;
+		}
+		return $this->isType(constants_TokenType::$KwModule, $n);
+	}
+	public function isKwPublic($n = null) {
+		if($n === null) {
+			$n = 0;
+		}
+		return $this->isType(constants_TokenType::$KwPublic, $n);
 	}
 	public function isKwSub($n = null) {
 		if($n === null) {
@@ -461,9 +479,13 @@ class parser_ParserUtil {
 		$tmp = $this->contextStack;
 		$tmp->push(new parser_nodes_IfNode($condition));
 	}
-	public function pushSubContext($name) {
+	public function pushStdModuleContext($name) {
 		$tmp = $this->contextStack;
-		$tmp->push(new parser_nodes_SubNode($name));
+		$tmp->push(new parser_nodes_StdModuleNode($name));
+	}
+	public function pushSubroutineContext($name) {
+		$tmp = $this->contextStack;
+		$tmp->push(new parser_nodes_SubroutineNode($name));
 	}
 	public function pushWhileContext($condition) {
 		$tmp = $this->contextStack;
