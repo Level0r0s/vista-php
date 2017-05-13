@@ -23,13 +23,10 @@ class runtime_Vm {
 		return $values;
 	}
 	static function restoreFromSession($sessionStr) {
-		runtime_loader_ObjectBuilder::init();
-		if($sessionStr !== null) {
-			runtime_globals_GlobalDictionary::$instance->fromSession($sessionStr);
-		}
+		runtime_loader_SessionManager::restoreFromSession($sessionStr);
 	}
 	static function storeToSession() {
-		return runtime_globals_GlobalDictionary::$instance->toSession();
+		return runtime_loader_SessionManager::storeToSession();
 	}
 	function __toString() { return 'runtime.Vm'; }
 }

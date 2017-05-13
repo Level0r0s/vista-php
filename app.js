@@ -198,7 +198,6 @@ var Node = function () {
         value: function evalScript(script) {
             var fn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
 
-            console.log('EVAL SCRIPT', script);
             var reply = this.getVm().evalScript(script)[0];
             if (fn) fn.call(null, [reply]);
         }

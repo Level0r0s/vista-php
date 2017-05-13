@@ -14,15 +14,6 @@ class runtime_globals_GlobalDictionary {
 		$this->map->set($name, $val);
 		return $val;
 	}
-	public function fromSession($s) {
-		$unserializer = new haxe_Unserializer($s);
-		$this->map = $unserializer->unserialize();
-	}
-	public function toSession() {
-		$serializer = new haxe_Serializer();
-		$serializer->serialize($this->map);
-		return $serializer->toString();
-	}
 	public function __call($m, $a) {
 		if(isset($this->$m) && is_callable($this->$m))
 			return call_user_func_array($this->$m, $a);

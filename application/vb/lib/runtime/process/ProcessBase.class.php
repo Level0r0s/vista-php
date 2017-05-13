@@ -31,6 +31,8 @@ class runtime_process_ProcessBase {
 			$this->contextStack->push($this->currentContext);
 		}
 		$this->currentContext = $context;
+		$this->bytecodes = $this->currentContext->bytecodes;
+		$this->literals = $this->currentContext->literals;
 		$this->pc = $this->currentContext->pc;
 		$this->stack = $this->currentContext->stack;
 	}
@@ -38,6 +40,8 @@ class runtime_process_ProcessBase {
 		if($this->contextStack->length > 0) {
 			$context = $this->contextStack->pop();
 			$this->currentContext = $context;
+			$this->bytecodes = $this->currentContext->bytecodes;
+			$this->literals = $this->currentContext->literals;
 			$this->pc = $this->currentContext->pc;
 			$this->stack = $this->currentContext->stack;
 			return true;
@@ -53,8 +57,14 @@ class runtime_process_ProcessBase {
 		$payload1 = _hx_anonymous(array("service" => "action", "id" => $payload, "action" => $action, "args" => util_ArrayUtil::normalizeArray($args), "afterAppear" => $afterAppear));
 		$this->pushOutput($payload1);
 	}
+	public function callSubroutine($method) {
+		$this->activateContext(new runtime_process_MethodContext($method));
+	}
 	public function hgoto($n) {
 		$this->pc = $n;
+	}
+	public function hasMoreBytecodes() {
+		return $this->pc < $this->bytecodes->length;
 	}
 	public function literal($index) {
 		return $this->literals[$index];

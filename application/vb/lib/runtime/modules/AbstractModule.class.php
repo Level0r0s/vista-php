@@ -20,8 +20,10 @@ class runtime_modules_AbstractModule {
 	public $name;
 	public $propertyNames;
 	public function addMethod($name, $method) {
-		haxe_Log::trace("AbstractModule addMethod " . _hx_string_or_null($name), _hx_anonymous(array("fileName" => "AbstractModule.hx", "lineNumber" => 19, "className" => "runtime.modules.AbstractModule", "methodName" => "addMethod", "customParams" => (new _hx_array(array($method))))));
 		$this->methodDict->set($name, $method);
+	}
+	public function getMethod($name) {
+		return $this->methodDict->get($name);
 	}
 	public function __call($m, $a) {
 		if(isset($this->$m) && is_callable($this->$m))

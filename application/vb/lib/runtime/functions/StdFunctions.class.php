@@ -167,6 +167,7 @@ class runtime_functions_StdFunctions extends runtime_functions_UiFunctions {
 	}
 	public function subDefine($lit, $start) {
 		$name = Std::string($this->literal($lit));
+		haxe_Log::trace("subDefine", _hx_anonymous(array("fileName" => "StdFunctions.hx", "lineNumber" => 164, "className" => "runtime.functions.StdFunctions", "methodName" => "subDefine", "customParams" => (new _hx_array(array($name))))));
 		$this->push($this->setGlobalName($name, $start));
 	}
 	public function subReturn() {

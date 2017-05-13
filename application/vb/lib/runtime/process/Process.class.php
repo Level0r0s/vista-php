@@ -107,7 +107,11 @@ class runtime_process_Process extends runtime_functions_ModuleFunctions {
 	}
 	public function hasMore() {
 		$this->iterations++;
-		return $this->pc < $this->bytecodes->length;
+		if(!$this->hasMoreBytecodes()) {
+			return $this->restoreContext();
+		} else {
+			return true;
+		}
 	}
 	public function next() {
 		return $this->bytecodes[$this->pc++];

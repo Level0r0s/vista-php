@@ -6,6 +6,25 @@ class runtime_functions_Builtins extends runtime_process_ProcessBase {
 		parent::__construct($methodContext);
 	}}
 	public function callMemberFn($objectName, $fnName, $args) {
+		if(util_StringUtil::isGlobal($objectName)) {
+			return $this->callGlobalFn($objectName, $fnName, $args);
+		} else {
+			return $this->callInstanceFn($objectName, $fnName, $args);
+		}
+	}
+	public function callGlobalFn($objectName, $fnName, $args) {
+		$module = runtime_globals_GlobalModules::getStdModule($objectName);
+		if($module === null) {
+			return "module " . _hx_string_or_null($objectName) . " not found";
+		}
+		$method = $module->getMethod($fnName);
+		if($method === null) {
+			return "method " . _hx_string_or_null($fnName) . " not found";
+		}
+		$this->callSubroutine($method);
+		return $objectName;
+	}
+	public function callInstanceFn($objectName, $fnName, $args) {
 		$map = new haxe_ds_StringMap();
 		$object = $this->getObjectName($objectName);
 		if($object !== null) {
