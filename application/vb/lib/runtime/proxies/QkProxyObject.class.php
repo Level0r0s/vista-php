@@ -8,6 +8,13 @@ class runtime_proxies_QkProxyObject extends runtime_proxies_QkObject {
 		$this->proxyId = ++runtime_proxies_QkProxyObject::$idCounter;
 	}}
 	public $proxyId;
+	public function addModuleHandler($moduleName, $subName, $eventName, $map) {
+		$map->set("id", $this->proxyId);
+		$map->set("type", "module");
+		$map->set("module", $moduleName);
+		$map->set("subroutine", $subName);
+		$map->set("event", $eventName);
+	}
 	public function callFn($functionName, $args, $map) {
 		$map->set("action", $functionName);
 		$map->set("args", $args);

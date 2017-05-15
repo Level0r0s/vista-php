@@ -7,6 +7,8 @@ class runtime_proxies_QkObject {
 		$this->name = $name;
 	}}
 	public $name;
+	public function addModuleHandler($moduleName, $subName, $eventName, $map) {
+	}
 	public function callFn($functionName, $args, $map) {
 	}
 	public function creationService() {

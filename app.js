@@ -62,6 +62,13 @@ var Api = function () {
             return window.require == undefined;
         }
     }, {
+        key: "callSubroutine",
+        value: function callSubroutine(id, type, moduleName, subroutineName) {
+            var fn = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : null;
+
+            if (this.isServer()) server_1.Server.callSubroutine(id, type, moduleName, subroutineName, fn);else node_1.Node.callSubroutine(id, type, moduleName, subroutineName, fn);
+        }
+    }, {
         key: "deleteModel",
         value: function deleteModel(model, id) {
             var fn = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
@@ -184,6 +191,14 @@ var Node = function () {
                 this.instance = new Node();
             }
             return this.instance;
+        }
+    }, {
+        key: "callSubroutine",
+        value: function callSubroutine(id, type, moduleName, subroutineName) {
+            var fn = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : null;
+
+            var reply = this.getVm().callSubroutine(id, type, moduleName, subroutineName)[0];
+            if (fn) fn.call(null, [reply]);
         }
     }, {
         key: "deleteModel",
@@ -330,6 +345,13 @@ var Server = function () {
             return this.instance;
         }
     }, {
+        key: "callSubroutine",
+        value: function callSubroutine(id, type, moduleName, subroutineName) {
+            var fn = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : null;
+
+            this.getInstance().callSubroutine(id, type, moduleName, subroutineName, fn);
+        }
+    }, {
         key: "deleteModel",
         value: function deleteModel(model, id) {
             var fn = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
@@ -467,6 +489,15 @@ var Server = function () {
         key: "createModelUrl",
         value: function createModelUrl(model, id) {
             if (id == null) return "index.php/api/" + model;else return "index.php/api/" + model + "/" + id;
+        }
+    }, {
+        key: "callSubroutine",
+        value: function callSubroutine(id, type, moduleName, subroutineName) {
+            var fn = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : null;
+
+            var req = this.createGetRequest('index.php/rpc');
+            var data = { service: 'basic', method: 'callSubroutine', id: id, type: type, moduleName: moduleName, subroutineName: subroutineName };
+            this.sendRequest(req, data, fn);
         }
     }, {
         key: "deleteModel",
@@ -760,37 +791,10 @@ var BasicManager = function () {
     _createClass(BasicManager, [{
         key: "eval_script",
         value: function eval_script(script, fn, scope) {
+            var _this = this;
+
             api_1.Api.evalScript(script, function (reply) {
-                for (var k in reply) {
-                    var v = reply[k];
-                    if (v instanceof Array) {
-                        var _iteratorNormalCompletion = true;
-                        var _didIteratorError = false;
-                        var _iteratorError = undefined;
-
-                        try {
-                            for (var _iterator = v[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-                                var x = _step.value;
-
-                                if (x.service) x = service_manager_1.ServiceManager.perform_service(x);
-                                if (fn) fn.call(scope, x);
-                            }
-                        } catch (err) {
-                            _didIteratorError = true;
-                            _iteratorError = err;
-                        } finally {
-                            try {
-                                if (!_iteratorNormalCompletion && _iterator.return) {
-                                    _iterator.return();
-                                }
-                            } finally {
-                                if (_didIteratorError) {
-                                    throw _iteratorError;
-                                }
-                            }
-                        }
-                    }
-                }
+                _this.handle_basic_reply(reply, fn, scope);
             });
         }
     }, {
@@ -799,6 +803,43 @@ var BasicManager = function () {
             api_1.Api.getClassNames(function (reply) {
                 if (fn) fn.call(scope, reply);
             });
+        }
+    }, {
+        key: "handle_basic_reply",
+        value: function handle_basic_reply(reply) {
+            var fn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+            var scope = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+
+            for (var k in reply) {
+                var v = reply[k];
+                if (v instanceof Array) {
+                    var _iteratorNormalCompletion = true;
+                    var _didIteratorError = false;
+                    var _iteratorError = undefined;
+
+                    try {
+                        for (var _iterator = v[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                            var x = _step.value;
+
+                            if (x.service) x = service_manager_1.ServiceManager.perform_service(x);
+                            if (fn) fn.call(scope, x);
+                        }
+                    } catch (err) {
+                        _didIteratorError = true;
+                        _iteratorError = err;
+                    } finally {
+                        try {
+                            if (!_iteratorNormalCompletion && _iterator.return) {
+                                _iterator.return();
+                            }
+                        } finally {
+                            if (_didIteratorError) {
+                                throw _iteratorError;
+                            }
+                        }
+                    }
+                }
+            }
         }
     }], [{
         key: "getInstance",
@@ -823,6 +864,14 @@ var BasicManager = function () {
             var scope = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
 
             this.getInstance().get_class_names(fn, scope);
+        }
+    }, {
+        key: "handle_basic_reply",
+        value: function handle_basic_reply(reply) {
+            var fn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+            var scope = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+
+            this.getInstance().handle_basic_reply(reply, fn, scope);
         }
     }]);
 
@@ -939,13 +988,19 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 Object.defineProperty(exports, "__esModule", { value: true });
 var TextArea = qx.ui.form.TextArea;
 var abstract_window_1 = require("../ui/windows/abstract_window");
+var api_1 = require("../api/api");
+var basic_manager_1 = require("../managers/basic_manager");
+var button_1 = require("../ui/widgets/button");
 var hsplit_pane_1 = require("../ui/splitpane/hsplit_pane");
+var menu_button_1 = require("../ui/widgets/menu_button");
+var menu_bar_button_1 = require("../ui/widgets/menu_bar_button");
 var monaco_editor_1 = require("../ui/widgets/iframe/monaco_editor");
 var paper_1 = require("../ui/widgets/iframe/paper");
-var vsplit_pane_1 = require("../ui/splitpane/vsplit_pane");
+var simple_button_bar_1 = require("../ui/widgets/simple_button_bar");
 var tab_page_1 = require("../ui/tabview/tab_page");
 var tab_view_1 = require("../ui/tabview/tab_view");
 var tinymce_1 = require("../ui/widgets/iframe/tinymce");
+var vsplit_pane_1 = require("../ui/splitpane/vsplit_pane");
 
 var ServiceManager = function () {
     _createClass(ServiceManager, null, [{
@@ -1034,6 +1089,8 @@ var ServiceManager = function () {
                     return this.service_action(reply);
                 case 'create':
                     return this.service_create(reply.args);
+                case 'handle':
+                    return this.service_handle(reply);
                 case 'print':
                     return this.service_print(reply.args);
                 default:
@@ -1048,16 +1105,54 @@ var ServiceManager = function () {
             var args = this.normalizeArg(reply.args);
             var proxy = this.getProxy(id);
             if (proxy == null) return null;
-            var fn = proxy[action];
+            var fn = this.service_action_special(proxy, action, args);
+            if (fn == null) fn = proxy[action];
             if (fn == null) return null;
             fn.apply(proxy, args);
+        }
+    }, {
+        key: "service_action_special",
+        value: function service_action_special(proxy, action, args) {
+            var obj = {};
+            args.push(obj);
+            switch (action) {
+                case 'addSouth':
+                    action = 'add';
+                    obj.edge = 'south';
+                    break;
+                case 'addNorth':
+                    action = 'add';
+                    obj.edge = 'north';
+                    break;
+                case 'addEast':
+                    action = 'add';
+                    obj.edge = 'east';
+                    break;
+                case 'addWest':
+                    action = 'add';
+                    obj.edge = 'west';
+                    break;
+            }
+            return proxy[action];
         }
     }, {
         key: "service_create",
         value: function service_create(args) {
             switch (args.xtype) {
+                case 'button':
+                    this.service_create_button(args);
+                    break;
+                case 'buttonbar':
+                    this.service_create_buttonbar(args);
+                    break;
                 case 'hsplitpanel':
                     this.service_create_hsplitpanel(args);
+                    break;
+                case 'menubarbutton':
+                    this.service_create_menubarbutton(args);
+                    break;
+                case 'menubutton':
+                    this.service_create_menubutton(args);
                     break;
                 case 'monaco':
                     this.service_create_monaco(args);
@@ -1086,11 +1181,52 @@ var ServiceManager = function () {
             }
         }
     }, {
+        key: "service_handle",
+        value: function service_handle(reply) {
+            var id = reply.id;
+            var event = reply.event;
+            var widget = this.getProxy(id);
+            if (widget == null) return;
+            widget.addListener(event, function () {
+                api_1.Api.callSubroutine(reply.id, reply.type, reply.module, reply.subroutine, function (reply2) {
+                    basic_manager_1.BasicManager.handle_basic_reply(reply2);
+                });
+            });
+        }
+    }, {
+        key: "service_create_button",
+        value: function service_create_button(args) {
+            var id = args.id;
+            var button = new button_1.Button();
+            this.setProxy(id, button);
+        }
+    }, {
+        key: "service_create_buttonbar",
+        value: function service_create_buttonbar(args) {
+            var id = args.id;
+            var buttonbar = new simple_button_bar_1.SimpleButtonBar();
+            this.setProxy(id, buttonbar);
+        }
+    }, {
         key: "service_create_hsplitpanel",
         value: function service_create_hsplitpanel(args) {
             var id = args.id;
             var hsplitpanel = new hsplit_pane_1.HSplitPane();
             this.setProxy(id, hsplitpanel);
+        }
+    }, {
+        key: "service_create_menubarbutton",
+        value: function service_create_menubarbutton(args) {
+            var id = args.id;
+            var button = new menu_bar_button_1.MenuBarButton();
+            this.setProxy(id, button);
+        }
+    }, {
+        key: "service_create_menubutton",
+        value: function service_create_menubutton(args) {
+            var id = args.id;
+            var button = new menu_button_1.MenuButton();
+            this.setProxy(id, button);
         }
     }, {
         key: "service_create_monaco",
@@ -1157,6 +1293,7 @@ var ServiceManager = function () {
     }, {
         key: "service_print",
         value: function service_print(args) {
+            if (basic_manager_1.BasicManager.workspace != null && args.msg != null) basic_manager_1.BasicManager.workspace.print(args.msg);
             return args.msg;
         }
     }, {
@@ -1171,7 +1308,7 @@ var ServiceManager = function () {
 
 exports.ServiceManager = ServiceManager;
 
-},{"../ui/splitpane/hsplit_pane":24,"../ui/splitpane/vsplit_pane":26,"../ui/tabview/tab_page":27,"../ui/tabview/tab_view":28,"../ui/widgets/iframe/monaco_editor":49,"../ui/widgets/iframe/paper":50,"../ui/widgets/iframe/tinymce":51,"../ui/windows/abstract_window":57}],20:[function(require,module,exports){
+},{"../api/api":3,"../managers/basic_manager":16,"../ui/splitpane/hsplit_pane":24,"../ui/splitpane/vsplit_pane":26,"../ui/tabview/tab_page":27,"../ui/tabview/tab_view":28,"../ui/widgets/button":36,"../ui/widgets/iframe/monaco_editor":49,"../ui/widgets/iframe/paper":50,"../ui/widgets/iframe/tinymce":51,"../ui/widgets/menu_bar_button":52,"../ui/widgets/menu_button":53,"../ui/widgets/simple_button_bar":55,"../ui/windows/abstract_window":57}],20:[function(require,module,exports){
 /// <reference path="../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -1961,7 +2098,7 @@ var NavbarLogin = function (_SplitButton) {
 
 exports.NavbarLogin = NavbarLogin;
 
-},{"../../../constants/image_constants":8,"../../../constants/qx_constants":11,"../../../constants/session_messages":12,"../../../constants/session_state":13,"../../../constants/style_constants":14,"../../../managers/session_manager":20,"../../widgets/menu_button":52,"../../windows/form/session/login_window":59,"../../windows/form/session/register_window":60,"../../windows/form/session/settings_window":61}],33:[function(require,module,exports){
+},{"../../../constants/image_constants":8,"../../../constants/qx_constants":11,"../../../constants/session_messages":12,"../../../constants/session_state":13,"../../../constants/style_constants":14,"../../../managers/session_manager":20,"../../widgets/menu_button":53,"../../windows/form/session/login_window":59,"../../windows/form/session/register_window":60,"../../windows/form/session/settings_window":61}],33:[function(require,module,exports){
 /// <reference path="../../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -2125,7 +2262,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var menubar_button_1 = require("./menubar_button");
+var menu_bar_button_1 = require("./menu_bar_button");
 var simple_button_bar_1 = require("./simple_button_bar");
 
 var BasicButtonBar = function (_simple_button_bar_1$) {
@@ -2158,7 +2295,7 @@ var BasicButtonBar = function (_simple_button_bar_1$) {
         key: "createButton",
         value: function createButton(text, fn) {
             var html = this.getButtonHtml(text);
-            return new menubar_button_1.MenubarButton(html, fn, this.window);
+            return new menu_bar_button_1.MenuBarButton(html, fn, this.window);
         }
     }]);
 
@@ -2167,7 +2304,7 @@ var BasicButtonBar = function (_simple_button_bar_1$) {
 
 exports.BasicButtonBar = BasicButtonBar;
 
-},{"./menubar_button":53,"./simple_button_bar":55}],36:[function(require,module,exports){
+},{"./menu_bar_button":52,"./simple_button_bar":55}],36:[function(require,module,exports){
 /// <reference path="../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -2247,7 +2384,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var menubar_button_1 = require("./menubar_button");
+var menu_bar_button_1 = require("./menu_bar_button");
 var simple_button_bar_1 = require("./simple_button_bar");
 
 var ClassBrowserButtonBar = function (_simple_button_bar_1$) {
@@ -2278,7 +2415,7 @@ var ClassBrowserButtonBar = function (_simple_button_bar_1$) {
         key: "createButton",
         value: function createButton(text, fn) {
             var html = this.getButtonHtml(text);
-            return new menubar_button_1.MenubarButton(html, fn, this.window);
+            return new menu_bar_button_1.MenuBarButton(html, fn, this.window);
         }
     }]);
 
@@ -2287,7 +2424,7 @@ var ClassBrowserButtonBar = function (_simple_button_bar_1$) {
 
 exports.ClassBrowserButtonBar = ClassBrowserButtonBar;
 
-},{"./menubar_button":53,"./simple_button_bar":55}],38:[function(require,module,exports){
+},{"./menu_bar_button":52,"./simple_button_bar":55}],38:[function(require,module,exports){
 /// <reference path="../../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -3369,6 +3506,68 @@ exports.TinyMce = TinyMce;
 /// <reference path="../../types/qooxdoo.d.ts" />
 "use strict";
 
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var QxMenubarButton = qx.ui.menubar.Button;
+var qx_constants = require("../../constants/qx_constants");
+var style_constants = require("../../constants/style_constants");
+
+var MenuBarButton = function (_QxMenubarButton) {
+    _inherits(MenuBarButton, _QxMenubarButton);
+
+    function MenuBarButton() {
+        var label = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+        var fn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+        var context = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+
+        _classCallCheck(this, MenuBarButton);
+
+        var _this = _possibleConstructorReturn(this, (MenuBarButton.__proto__ || Object.getPrototypeOf(MenuBarButton)).call(this));
+
+        _this.setRich(true);
+        if (label) _this.setLabel(label);
+        if (fn) _this.addListener(qx_constants.EXECUTE, fn, context);
+        return _this;
+    }
+
+    _createClass(MenuBarButton, [{
+        key: "getButtonColor",
+        value: function getButtonColor() {
+            return style_constants.BUTTONBAR_BUTTON_NORMAL_COLOR;
+        }
+    }, {
+        key: "getButtonHtml",
+        value: function getButtonHtml(text) {
+            var color = this.getButtonColor();
+            var style = "color:" + color + ";font-weight:bold;";
+            return "<span style=\"" + style + "\">" + text + "</span>";
+        }
+    }, {
+        key: "setLabel",
+        value: function setLabel(label) {
+            var html = this.getButtonHtml(label);
+            return _get(MenuBarButton.prototype.__proto__ || Object.getPrototypeOf(MenuBarButton.prototype), "setLabel", this).call(this, html);
+        }
+    }]);
+
+    return MenuBarButton;
+}(QxMenubarButton);
+
+exports.MenuBarButton = MenuBarButton;
+
+},{"../../constants/qx_constants":11,"../../constants/style_constants":14}],53:[function(require,module,exports){
+/// <reference path="../../types/qooxdoo.d.ts" />
+"use strict";
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
@@ -3401,43 +3600,6 @@ var MenuButton = function (_QxMenuButton) {
 
 exports.MenuButton = MenuButton;
 
-},{"../../constants/qx_constants":11}],53:[function(require,module,exports){
-/// <reference path="../../types/qooxdoo.d.ts" />
-"use strict";
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var QxMenubarButton = qx.ui.menubar.Button;
-var qx_constants = require("../../constants/qx_constants");
-
-var MenubarButton = function (_QxMenubarButton) {
-    _inherits(MenubarButton, _QxMenubarButton);
-
-    function MenubarButton() {
-        var label = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
-        var fn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
-        var context = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
-
-        _classCallCheck(this, MenubarButton);
-
-        var _this = _possibleConstructorReturn(this, (MenubarButton.__proto__ || Object.getPrototypeOf(MenubarButton)).call(this));
-
-        _this.setRich(true);
-        if (label) _this.setLabel(label);
-        if (fn) _this.addListener(qx_constants.EXECUTE, fn, context);
-        return _this;
-    }
-
-    return MenubarButton;
-}(QxMenubarButton);
-
-exports.MenubarButton = MenubarButton;
-
 },{"../../constants/qx_constants":11}],54:[function(require,module,exports){
 /// <reference path="../../types/qooxdoo.d.ts" />
 "use strict";
@@ -3451,7 +3613,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var menubar_button_1 = require("./menubar_button");
+var menu_bar_button_1 = require("./menu_bar_button");
 var simple_button_bar_1 = require("./simple_button_bar");
 
 var ScriptBrowserButtonBar = function (_simple_button_bar_1$) {
@@ -3484,7 +3646,7 @@ var ScriptBrowserButtonBar = function (_simple_button_bar_1$) {
         key: "createButton",
         value: function createButton(text, fn) {
             var html = this.getButtonHtml(text);
-            return new menubar_button_1.MenubarButton(html, fn, this.window);
+            return new menu_bar_button_1.MenuBarButton(html, fn, this.window);
         }
     }]);
 
@@ -3493,7 +3655,7 @@ var ScriptBrowserButtonBar = function (_simple_button_bar_1$) {
 
 exports.ScriptBrowserButtonBar = ScriptBrowserButtonBar;
 
-},{"./menubar_button":53,"./simple_button_bar":55}],55:[function(require,module,exports){
+},{"./menu_bar_button":52,"./simple_button_bar":55}],55:[function(require,module,exports){
 /// <reference path="../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -3509,6 +3671,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var Composite = qx.ui.container.Composite;
 var Decorator = qx.ui.decoration.Decorator;
 var HBox = qx.ui.layout.HBox;
+var menu_bar_button_1 = require("./menu_bar_button");
 var style_constants = require("../../constants/style_constants");
 
 var SimpleButtonBar = function (_Composite) {
@@ -3529,6 +3692,17 @@ var SimpleButtonBar = function (_Composite) {
     }
 
     _createClass(SimpleButtonBar, [{
+        key: "addButton",
+        value: function addButton(label, clickAction) {
+            var html = this.getButtonHtml(label);
+            var fn = function fn() {
+                console.log('onClick action', clickAction);
+            };
+            var btn = new menu_bar_button_1.MenuBarButton(html, fn);
+            this.add(btn);
+            console.log('addButton', label, clickAction);
+        }
+    }, {
         key: "getButtonColor",
         value: function getButtonColor(btn) {
             return style_constants.BUTTONBAR_BUTTON_NORMAL_COLOR;
@@ -3555,7 +3729,7 @@ var SimpleButtonBar = function (_Composite) {
 
 exports.SimpleButtonBar = SimpleButtonBar;
 
-},{"../../constants/style_constants":14}],56:[function(require,module,exports){
+},{"../../constants/style_constants":14,"./menu_bar_button":52}],56:[function(require,module,exports){
 /// <reference path="../../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -4088,6 +4262,7 @@ var WorkspaceWindow = function (_abstract_window_1$Ab) {
             this.editor = new monaco_editor_1.MonacoEditor();
             this.output = new text_area_1.TextArea();
             _get(WorkspaceWindow.prototype.__proto__ || Object.getPrototypeOf(WorkspaceWindow.prototype), "init", this).call(this);
+            basic_manager_1.BasicManager.workspace = this;
         }
     }, {
         key: "addButtons",
@@ -4151,6 +4326,11 @@ var WorkspaceWindow = function (_abstract_window_1$Ab) {
     }, {
         key: "onShowReply",
         value: function onShowReply(reply) {
+            this.print(reply);
+        }
+    }, {
+        key: "print",
+        value: function print(reply) {
             if (reply === undefined) return;
             var oldText = this.output.getValue();
             if (!oldText) oldText = '';

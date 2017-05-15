@@ -12,7 +12,6 @@ class parser_nodes_StdModuleNode extends parser_nodes_ParseNode {
 	public $subroutines;
 	public function addStmt($stmt) {
 		if(!$stmt->isSubroutine()) {
-			haxe_Log::trace("StdModuleNode addStmt", _hx_anonymous(array("fileName" => "StdModuleNode.hx", "lineNumber" => 18, "className" => "parser.nodes.StdModuleNode", "methodName" => "addStmt", "customParams" => (new _hx_array(array($stmt))))));
 			return;
 		}
 		$tmp = $this->subroutines;
@@ -30,6 +29,9 @@ class parser_nodes_StdModuleNode extends parser_nodes_ParseNode {
 			$stdModule->addMethod($methodName, $compiledMethod);
 			unset($sub,$stdModule,$methodName,$compiledMethod);
 		}
+	}
+	public function getName() {
+		return $this->name;
 	}
 	public function isModule() {
 		return true;

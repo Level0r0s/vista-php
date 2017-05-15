@@ -9,11 +9,6 @@ class runtime_globals_GlobalModules {
 	}}
 	public $classModules;
 	public $stdModules;
-	public function fromSession($s) {
-	}
-	public function toSession() {
-		return null;
-	}
 	public function __call($m, $a) {
 		if(isset($this->$m) && is_callable($this->$m))
 			return call_user_func_array($this->$m, $a);
@@ -25,11 +20,18 @@ class runtime_globals_GlobalModules {
 			throw new HException('Unable to call <'.$m.'>');
 	}
 	static $instance;
+	static $messages;
+	static function clearMessages() {
+		runtime_globals_GlobalModules::$messages = (new _hx_array(array()));
+	}
 	static function getClassModule($name) {
 		return runtime_globals_GlobalModules::$instance->classModules->get($name);
 	}
 	static function getStdModule($name) {
 		return runtime_globals_GlobalModules::$instance->stdModules->get($name);
+	}
+	static function printMessage($msg) {
+		runtime_globals_GlobalModules::$messages->push($msg);
 	}
 	static function setClassModule($name, $module) {
 		runtime_globals_GlobalModules::$instance->classModules->set($name, $module);
@@ -42,3 +44,4 @@ class runtime_globals_GlobalModules {
 	function __toString() { return 'runtime.globals.GlobalModules'; }
 }
 runtime_globals_GlobalModules::$instance = new runtime_globals_GlobalModules();
+runtime_globals_GlobalModules::$messages = (new _hx_array(array()));

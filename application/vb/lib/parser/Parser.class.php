@@ -275,44 +275,52 @@ class parser_Parser extends parser_ParserUtil {
 				if($tt === constants_TokenType::$KwButton) {
 					$type = 3;
 				} else {
-					if($tt === constants_TokenType::$KwCanvas) {
+					if($tt === constants_TokenType::$KwButtonBar) {
 						$type = 4;
 					} else {
-						if($tt === constants_TokenType::$KwDatabase) {
+						if($tt === constants_TokenType::$KwCanvas) {
 							$type = 5;
 						} else {
-							if($tt === constants_TokenType::$KwFormPanel) {
+							if($tt === constants_TokenType::$KwDatabase) {
 								$type = 6;
 							} else {
-								if($tt === constants_TokenType::$KwHSplitPanel) {
+								if($tt === constants_TokenType::$KwFormPanel) {
 									$type = 7;
 								} else {
-									if($tt === constants_TokenType::$KwListPanel) {
+									if($tt === constants_TokenType::$KwHSplitPanel) {
 										$type = 8;
 									} else {
-										if($tt === constants_TokenType::$KwRichEditor) {
+										if($tt === constants_TokenType::$KwListPanel) {
 											$type = 9;
 										} else {
-											if($tt === constants_TokenType::$KwTabPage) {
+											if($tt === constants_TokenType::$KwMenuBarButton) {
 												$type = 10;
 											} else {
-												if($tt === constants_TokenType::$KwTabPanel) {
+												if($tt === constants_TokenType::$KwRichEditor) {
 													$type = 11;
 												} else {
-													if($tt === constants_TokenType::$KwTextArea) {
+													if($tt === constants_TokenType::$KwTabPage) {
 														$type = 12;
 													} else {
-														if($tt === constants_TokenType::$KwTextField) {
+														if($tt === constants_TokenType::$KwTabPanel) {
 															$type = 13;
 														} else {
-															if($tt === constants_TokenType::$KwViewport) {
-																$type = 15;
+															if($tt === constants_TokenType::$KwTextArea) {
+																$type = 14;
 															} else {
-																if($tt === constants_TokenType::$KwVSplitPanel) {
-																	$type = 16;
+																if($tt === constants_TokenType::$KwTextField) {
+																	$type = 15;
 																} else {
-																	if($tt === constants_TokenType::$KwWindow) {
-																		$type = 14;
+																	if($tt === constants_TokenType::$KwViewport) {
+																		$type = 17;
+																	} else {
+																		if($tt === constants_TokenType::$KwVSplitPanel) {
+																			$type = 18;
+																		} else {
+																			if($tt === constants_TokenType::$KwWindow) {
+																				$type = 16;
+																			}
+																		}
 																	}
 																}
 															}
@@ -379,7 +387,9 @@ class parser_Parser extends parser_ParserUtil {
 			return false;
 		}
 		$this->advance(2);
-		$this->addStatement($this->popContext());
+		$node = $this->popContext();
+		$name = $node->getName();
+		$this->addStatement($node);
 		return true;
 	}
 	public function endSubroutineStatement() {

@@ -5,6 +5,17 @@ require_once APPPATH . 'vb/lib/runtime/Vm.class.php';
 
 class Vb  {
 
+    static public function callSubroutine(
+        $basic_session, $id, $type,
+        $moduleName, $subroutineName
+    )
+    {
+        return runtime_Vm::callSubroutine(
+            $basic_session, $id, $type,
+            $moduleName, $subroutineName
+        );
+    }
+
     static public function classNames($basic_session)
     {
         return runtime_Vm::classNames($basic_session);;

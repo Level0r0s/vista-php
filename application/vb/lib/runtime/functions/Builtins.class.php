@@ -7,15 +7,15 @@ class runtime_functions_Builtins extends runtime_process_ProcessBase {
 	}}
 	public function callMemberFn($objectName, $fnName, $args) {
 		if(util_StringUtil::isGlobal($objectName)) {
-			return $this->callGlobalFn($objectName, $fnName, $args);
+			return $this->callModuleFn($objectName, $fnName, $args);
 		} else {
-			return $this->callInstanceFn($objectName, $fnName, $args);
+			return $this->callObjectFn($objectName, $fnName, $args);
 		}
 	}
-	public function callGlobalFn($objectName, $fnName, $args) {
+	public function callModuleFn($objectName, $fnName, $args) {
 		$module = runtime_globals_GlobalModules::getStdModule($objectName);
 		if($module === null) {
-			return "module " . _hx_string_or_null($objectName) . " not found";
+			return $this->callObjectFn($objectName, $fnName, $args);
 		}
 		$method = $module->getMethod($fnName);
 		if($method === null) {
@@ -24,7 +24,7 @@ class runtime_functions_Builtins extends runtime_process_ProcessBase {
 		$this->callSubroutine($method);
 		return $objectName;
 	}
-	public function callInstanceFn($objectName, $fnName, $args) {
+	public function callObjectFn($objectName, $fnName, $args) {
 		$map = new haxe_ds_StringMap();
 		$object = $this->getObjectName($objectName);
 		if($object !== null) {
@@ -58,7 +58,8 @@ class runtime_functions_Builtins extends runtime_process_ProcessBase {
 		$this->push($val);
 	}
 	public function getGlobalName($name) {
-		return runtime_globals_GlobalDictionary::$instance->get($name);
+		$val = runtime_globals_GlobalDictionary::get($name);
+		return $val;
 	}
 	public function getObjectName($name) {
 		$val = $this->getGlobalName($name);
@@ -90,7 +91,7 @@ class runtime_functions_Builtins extends runtime_process_ProcessBase {
 		return "print " . _hx_string_rec($nargs, "");
 	}
 	public function setGlobalName($name, $val) {
-		runtime_globals_GlobalDictionary::$instance->set($name, $val);
+		runtime_globals_GlobalDictionary::set($name, $val);
 		return $val;
 	}
 	public function setPropertyNames($objectName, $propertyName, $val) {

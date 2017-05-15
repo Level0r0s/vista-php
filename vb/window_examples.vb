@@ -5,6 +5,36 @@ Public Module WindowExamples
     ' 
     ' run WindowExamples.CanvasWindow()
     '
+    Sub ButtonsWindow()
+
+        ' create the elements
+        Dim Win as Window
+        Dim Bb as ButtonBar
+        Dim Btn as MenubarButton
+
+        Win.setCaption("Buttons")
+        Btn.setLabel("Click Me")
+        Bb.add(Btn)
+        Win.addSouth(Bb)
+        Win.show()
+
+    End Sub
+
+    '
+    ' This is called when "Btn" is clicked
+    '
+    Sub Btn_Click()
+
+        print "Btn was clicked"
+
+    End Sub
+
+
+    '
+    ' Open a window with a graphic canvas
+    ' 
+    ' run WindowExamples.CanvasWindow()
+    '
     Sub CanvasWindow()
 
         ' create the elements

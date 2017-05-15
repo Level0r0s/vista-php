@@ -21,9 +21,26 @@ class runtime_modules_AbstractModule {
 	public $propertyNames;
 	public function addMethod($name, $method) {
 		$this->methodDict->set($name, $method);
+		$this->resolveHandler($name);
 	}
 	public function getMethod($name) {
 		return $this->methodDict->get($name);
+	}
+	public function resolveHandler($name) {
+		$nameEvent = util_StringUtil::asNameEventPair($name);
+		if($nameEvent === null) {
+			return;
+		}
+		$objectName = $nameEvent->get("name");
+		$object = runtime_globals_GlobalDictionary::get($objectName);
+		$eventName = $nameEvent->get("event");
+		$subName = $nameEvent->get("sub");
+		if($object !== null) {
+			$map = new haxe_ds_StringMap();
+			$object->addModuleHandler($this->name, $subName, $eventName, $map);
+			$service = runtime_process_ServiceManager::createHandlerService($map);
+			runtime_process_ProcessManager::addDelayedService($service);
+		}
 	}
 	public function __call($m, $a) {
 		if(isset($this->$m) && is_callable($this->$m))

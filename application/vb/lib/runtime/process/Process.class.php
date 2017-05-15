@@ -11,8 +11,32 @@ class runtime_process_Process extends runtime_functions_ModuleFunctions {
 		while($this->hasMore()) {
 			$this->dispatch($this->next());
 		}
+		{
+			$_g = 0;
+			$_g1 = runtime_globals_GlobalModules::$messages;
+			while($_g < $_g1->length) {
+				$msg = $_g1[$_g];
+				$_g = $_g + 1;
+				$this->printOutput($msg);
+				unset($msg);
+			}
+		}
+		runtime_globals_GlobalModules::clearMessages();
+		{
+			$_g2 = 0;
+			$_g11 = runtime_process_ProcessManager::getDelayedServices();
+			while($_g2 < $_g11->length) {
+				$service = $_g11[$_g2];
+				$_g2 = $_g2 + 1;
+				$this->pushOutput($service);
+				unset($service);
+			}
+		}
 		if($this->output->length === 0) {
-			$this->pushOutput($this->pop());
+			$val = $this->pop();
+			if($val !== null) {
+				$this->pushOutput($val);
+			}
 		}
 		return $this->output;
 	}
@@ -117,7 +141,7 @@ class runtime_process_Process extends runtime_functions_ModuleFunctions {
 		return $this->bytecodes[$this->pc++];
 	}
 	public function unknownOpcode($opCode) {
-		haxe_Log::trace("unknownOpcode(" . _hx_string_rec($opCode, "") . ")", _hx_anonymous(array("fileName" => "Process.hx", "lineNumber" => 90, "className" => "runtime.process.Process", "methodName" => "unknownOpcode", "customParams" => (new _hx_array(array($this->bytecodes))))));
+		haxe_Log::trace("unknownOpcode(" . _hx_string_rec($opCode, "") . ")", _hx_anonymous(array("fileName" => "Process.hx", "lineNumber" => 100, "className" => "runtime.process.Process", "methodName" => "unknownOpcode", "customParams" => (new _hx_array(array($this->bytecodes))))));
 	}
 	public function __call($m, $a) {
 		if(isset($this->$m) && is_callable($this->$m))

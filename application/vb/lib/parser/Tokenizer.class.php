@@ -60,6 +60,9 @@ class parser_Tokenizer extends util_ReadStream {
 		case "button":{
 			return $this->createToken($lcval, constants_TokenType::$KwButton);
 		}break;
+		case "buttonbar":{
+			return $this->createToken($lcval, constants_TokenType::$KwButtonBar);
+		}break;
 		case "canvas":{
 			return $this->createToken($lcval, constants_TokenType::$KwCanvas);
 		}break;
@@ -95,6 +98,9 @@ class parser_Tokenizer extends util_ReadStream {
 		}break;
 		case "listpanel":{
 			return $this->createToken($lcval, constants_TokenType::$KwListPanel);
+		}break;
+		case "menubarbutton":{
+			return $this->createToken($lcval, constants_TokenType::$KwMenuBarButton);
 		}break;
 		case "module":{
 			return $this->createToken($lcval, constants_TokenType::$KwModule);

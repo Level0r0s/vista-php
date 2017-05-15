@@ -63,11 +63,18 @@ class runtime_process_ProcessBase {
 	public function hgoto($n) {
 		$this->pc = $n;
 	}
+	public function handleOutput($object, $event, $handler) {
+		$payload = _hx_anonymous(array("service" => "handle", "id" => $object->getId(), "event" => $event, "handler" => $handler));
+		$this->pushOutput($payload);
+	}
 	public function hasMoreBytecodes() {
 		return $this->pc < $this->bytecodes->length;
 	}
 	public function literal($index) {
 		return $this->literals[$index];
+	}
+	public function log($msg) {
+		$this->printOutput($msg);
 	}
 	public function pop() {
 		return $this->stack->pop();

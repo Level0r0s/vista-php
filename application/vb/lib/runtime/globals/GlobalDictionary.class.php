@@ -7,10 +7,10 @@ class runtime_globals_GlobalDictionary {
 		$this->map = new haxe_ds_StringMap();
 	}}
 	public $map;
-	public function get($name) {
+	public function getName($name) {
 		return $this->map->get($name);
 	}
-	public function set($name, $val) {
+	public function setName($name, $val) {
 		$this->map->set($name, $val);
 		return $val;
 	}
@@ -25,6 +25,12 @@ class runtime_globals_GlobalDictionary {
 			throw new HException('Unable to call <'.$m.'>');
 	}
 	static $instance;
+	static function get($name) {
+		return runtime_globals_GlobalDictionary::$instance->getName($name);
+	}
+	static function set($name, $val) {
+		return runtime_globals_GlobalDictionary::$instance->setName($name, $val);
+	}
 	function __toString() { return 'runtime.globals.GlobalDictionary'; }
 }
 runtime_globals_GlobalDictionary::$instance = new runtime_globals_GlobalDictionary();

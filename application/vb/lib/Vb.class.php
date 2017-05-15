@@ -12,9 +12,7 @@ class Vb {
 	}
 	static function runScript($fname) {
 		$script = Vb::getScript($fname);
-		$tmp = (property_exists("haxe_Log", "trace") ? haxe_Log::$trace: array("haxe_Log", "trace"));
-		$tmp1 = Std::string(_hx_array_get(runtime_Vm::evalScript($script, null), 0));
-		call_user_func_array($tmp, array($tmp1, _hx_anonymous(array("fileName" => "Vb.hx", "lineNumber" => 27, "className" => "Vb", "methodName" => "runScript"))));
+		runtime_Vm::evalScript($script, null);
 	}
 	function __toString() { return 'Vb'; }
 }

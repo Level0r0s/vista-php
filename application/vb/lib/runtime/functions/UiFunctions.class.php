@@ -15,6 +15,11 @@ class runtime_functions_UiFunctions extends runtime_functions_Builtins {
 		$this->queueCreation($button);
 		return $button;
 	}
+	public function dimensionButtonBar($name) {
+		$buttonbar = new runtime_proxies_QkButtonBar($name);
+		$this->queueCreation($buttonbar);
+		return $buttonbar;
+	}
 	public function dimensionCanvas($name) {
 		$canvas = new runtime_proxies_QkCanvas($name);
 		$this->queueCreation($canvas);
@@ -34,6 +39,11 @@ class runtime_functions_UiFunctions extends runtime_functions_Builtins {
 		$panel = new runtime_proxies_QkListPanel($name);
 		$this->queueCreation($panel);
 		return $panel;
+	}
+	public function dimensionMenuBarButton($name) {
+		$button = new runtime_proxies_QkMenuBarButton($name);
+		$this->queueCreation($button);
+		return $button;
 	}
 	public function dimensionRichEditor($name) {
 		$editor = new runtime_proxies_QkRichEditor($name);

@@ -6,5 +6,8 @@ class php_Lib {
 	static function toPhpArray($a) {
 		return $a->a;
 	}
+	static function associativeArrayOfHash($hash) {
+		return $hash->h;
+	}
 	function __toString() { return 'php.Lib'; }
 }
