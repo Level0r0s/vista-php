@@ -5,5 +5,16 @@ class runtime_modules_ClassModule extends runtime_modules_AbstractModule {
 	public function __construct($name, $propertyNames = null) { if(!php_Boot::$skip_constructor) {
 		parent::__construct($name,$propertyNames);
 	}}
-	function __toString() { return 'runtime.modules.ClassModule'; }
+	public function toString() {
+		return "ClassModule(" . _hx_string_or_null($this->name) . ")";
+	}
+	static function findOrCreate($name) {
+		$cls = runtime_globals_GlobalModules::getClassModule($name);
+		if($cls !== null) {
+			return $cls;
+		}
+		$cls = new runtime_modules_ClassModule($name, null);
+		return runtime_globals_GlobalModules::setClassModule($name, $cls);
+	}
+	function __toString() { return $this->toString(); }
 }

@@ -14,6 +14,8 @@ class parser_nodes_DimensionNode extends parser_nodes_ParseNode {
 	public $name;
 	public $type;
 	public function generate($bytecodes, $util) {
+		$tmp = $this->name->getName();
+		runtime_proxies_ProxyManager::ensureProxy($tmp, $this->type);
 		$bytecodes->push(2);
 		$this->name->generate($bytecodes, $util);
 		$bytecodes->push($this->type);

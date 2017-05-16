@@ -39,7 +39,7 @@ class runtime_objects_VClass extends runtime_objects_VBehavior {
 				unset($cls);
 			}
 		}
-		return util_ArrayUtil::normalizeArray($values);
+		return util_NormalizeUtil::normalizeArray($values);
 	}
 	public function __call($m, $a) {
 		if(isset($this->$m) && is_callable($this->$m))

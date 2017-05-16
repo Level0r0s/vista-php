@@ -196,8 +196,9 @@ var Node = function () {
         key: "callSubroutine",
         value: function callSubroutine(id, type, moduleName, subroutineName) {
             var fn = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : null;
+            var scope = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : null;
 
-            var reply = this.getVm().callSubroutine(id, type, moduleName, subroutineName)[0];
+            var reply = this.getVm().callSubroutine('', id, type, moduleName, subroutineName)[0];
             if (fn) fn.call(null, [reply]);
         }
     }, {
@@ -212,6 +213,7 @@ var Node = function () {
         key: "evalScript",
         value: function evalScript(script) {
             var fn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+            var scope = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
 
             var reply = this.getVm().evalScript(script)[0];
             if (fn) fn.call(null, [reply]);
@@ -1294,7 +1296,7 @@ var ServiceManager = function () {
         key: "service_print",
         value: function service_print(args) {
             if (basic_manager_1.BasicManager.workspace != null && args.msg != null) basic_manager_1.BasicManager.workspace.print(args.msg);
-            return args.msg;
+            return null;
         }
     }, {
         key: "setProxy",
@@ -4331,7 +4333,7 @@ var WorkspaceWindow = function (_abstract_window_1$Ab) {
     }, {
         key: "print",
         value: function print(reply) {
-            if (reply === undefined) return;
+            if (reply === undefined || reply == null) return;
             var oldText = this.output.getValue();
             if (!oldText) oldText = '';
             var newText = void 0;

@@ -24,67 +24,8 @@ class runtime_functions_StdFunctions extends runtime_functions_UiFunctions {
 	}
 	public function dimension($lit, $type) {
 		$name = Std::string($this->literal($lit));
-		$obj = null;
-		switch($type) {
-		case 1:{
-			$obj = $this->dimensionAny($name);
-		}break;
-		case 2:{
-			$obj = $this->dimensionBasicEditor($name);
-		}break;
-		case 3:{
-			$obj = $this->dimensionButton($name);
-		}break;
-		case 4:{
-			$obj = $this->dimensionButtonBar($name);
-		}break;
-		case 5:{
-			$obj = $this->dimensionCanvas($name);
-		}break;
-		case 6:{
-			$obj = $this->dimensionDatabase($name);
-		}break;
-		case 7:{
-			$obj = $this->dimensionFormPanel($name);
-		}break;
-		case 8:{
-			$obj = $this->dimensionHSplitPanel($name);
-		}break;
-		case 9:{
-			$obj = $this->dimensionListPanel($name);
-		}break;
-		case 10:{
-			$obj = $this->dimensionMenuBarButton($name);
-		}break;
-		case 11:{
-			$obj = $this->dimensionRichEditor($name);
-		}break;
-		case 12:{
-			$obj = $this->dimensionTabPage($name);
-		}break;
-		case 13:{
-			$obj = $this->dimensionTabPanel($name);
-		}break;
-		case 14:{
-			$obj = $this->dimensionTextArea($name);
-		}break;
-		case 15:{
-			$obj = $this->dimensionTextField($name);
-		}break;
-		case 16:{
-			$obj = $this->dimensionWindow($name);
-		}break;
-		case 17:{
-			$obj = $this->dimensionViewport($name);
-		}break;
-		case 18:{
-			$obj = $this->dimensionVSplitPanel($name);
-		}break;
-		default:{
-			$obj = $this->dimensionAny($name);
-		}break;
-		}
-		$this->push($this->setGlobalName($name, $obj));
+		$obj = runtime_proxies_ProxyManager::ensureProxy($name, $type);
+		$this->push($this->queueCreation($obj));
 	}
 	public function dimensionAny($name) {
 		return new runtime_proxies_QkObject($name);
@@ -173,7 +114,7 @@ class runtime_functions_StdFunctions extends runtime_functions_UiFunctions {
 	}
 	public function subDefine($lit, $start) {
 		$name = Std::string($this->literal($lit));
-		haxe_Log::trace("subDefine", _hx_anonymous(array("fileName" => "StdFunctions.hx", "lineNumber" => 168, "className" => "runtime.functions.StdFunctions", "methodName" => "subDefine", "customParams" => (new _hx_array(array($name))))));
+		haxe_Log::trace("subDefine", _hx_anonymous(array("fileName" => "StdFunctions.hx", "lineNumber" => 128, "className" => "runtime.functions.StdFunctions", "methodName" => "subDefine", "customParams" => (new _hx_array(array($name))))));
 		$this->push($this->setGlobalName($name, $start));
 	}
 	public function subReturn() {

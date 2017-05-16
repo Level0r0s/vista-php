@@ -141,7 +141,6 @@ class runtime_process_Process extends runtime_functions_ModuleFunctions {
 		return $this->bytecodes[$this->pc++];
 	}
 	public function unknownOpcode($opCode) {
-		haxe_Log::trace("unknownOpcode(" . _hx_string_rec($opCode, "") . ")", _hx_anonymous(array("fileName" => "Process.hx", "lineNumber" => 100, "className" => "runtime.process.Process", "methodName" => "unknownOpcode", "customParams" => (new _hx_array(array($this->bytecodes))))));
 	}
 	public function __call($m, $a) {
 		if(isset($this->$m) && is_callable($this->$m))

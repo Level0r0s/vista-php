@@ -13,7 +13,8 @@ class runtime_Vm {
 	}
 	static function evalScript($script, $sessionStr) {
 		runtime_Vm::restoreFromSession($sessionStr);
-		return runtime_Vm::wrapReply(runtime_Vm::runFromScript($script));
+		$reply = runtime_Vm::runFromScript($script);
+		return runtime_Vm::wrapReply($reply);
 	}
 	static function runFromScript($script) {
 		$src = "" . _hx_string_or_null($script) . "\x0A\x0A";
@@ -23,11 +24,11 @@ class runtime_Vm {
 	static function runFromSubroutine($id, $type, $moduleName, $subroutineName) {
 		$module = runtime_globals_GlobalModules::getStdModule($moduleName);
 		if($module === null) {
-			return "module " . _hx_string_or_null($moduleName) . " not found";
+			return "module [" . _hx_string_or_null($moduleName) . "] not found";
 		}
 		$method = $module->getMethod($subroutineName);
 		if($method === null) {
-			return "method " . _hx_string_or_null($subroutineName) . " not found";
+			return "module [" . _hx_string_or_null($moduleName) . "] method [" . _hx_string_or_null($subroutineName) . "] not found";
 		}
 		return runtime_process_ProcessManager::runMethod($method);
 	}

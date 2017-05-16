@@ -8,11 +8,11 @@ class runtime_process_ServiceManager {
 			$afterAppear = false;
 		}
 		$value = $object->getId();
-		return _hx_anonymous(array("service" => "action", "id" => $value, "action" => $action, "args" => util_ArrayUtil::normalizeArray($args), "afterAppear" => $afterAppear));
+		return _hx_anonymous(array("service" => "action", "id" => $value, "action" => $action, "args" => util_NormalizeUtil::normalizeArray($args), "afterAppear" => $afterAppear));
 	}
 	static function createHandlerService($map) {
 		$map->set("service", "handle");
-		return util_ArrayUtil::normalizeMap($map);
+		return util_NormalizeUtil::normalizeMap($map);
 	}
 	function __toString() { return 'runtime.process.ServiceManager'; }
 }

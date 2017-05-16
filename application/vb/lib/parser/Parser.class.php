@@ -90,7 +90,7 @@ class parser_Parser extends parser_ParserUtil {
 		$this->unmark();
 		$this->advance(null);
 		$name = $this->nameNode();
-		$this->log("declare class " . Std::string($name));
+		$this->pushClassContext($name);
 		return true;
 	}
 	public function controlStatement() {
@@ -482,7 +482,8 @@ class parser_Parser extends parser_ParserUtil {
 		}
 		$this->unmark();
 		$this->advance(null);
-		$this->pushStdModuleContext($this->nameNode());
+		$name = $this->nameNode();
+		$this->pushStdModuleContext($name);
 		return true;
 	}
 	public function onGoSubStatement() {

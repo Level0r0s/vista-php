@@ -27,8 +27,14 @@ class runtime_globals_GlobalModules {
 	static function getClassModule($name) {
 		return runtime_globals_GlobalModules::$instance->classModules->get($name);
 	}
+	static function getClassModules() {
+		return runtime_globals_GlobalModules::$instance->classModules;
+	}
 	static function getStdModule($name) {
 		return runtime_globals_GlobalModules::$instance->stdModules->get($name);
+	}
+	static function getStdModules() {
+		return runtime_globals_GlobalModules::$instance->stdModules;
 	}
 	static function printMessage($msg) {
 		runtime_globals_GlobalModules::$messages->push($msg);
@@ -37,9 +43,15 @@ class runtime_globals_GlobalModules {
 		runtime_globals_GlobalModules::$instance->classModules->set($name, $module);
 		return $module;
 	}
+	static function setClassModules($classModules) {
+		runtime_globals_GlobalModules::$instance->classModules = $classModules;
+	}
 	static function setStdModule($name, $module) {
 		runtime_globals_GlobalModules::$instance->stdModules->set($name, $module);
 		return $module;
+	}
+	static function setStdModules($stdModules) {
+		runtime_globals_GlobalModules::$instance->stdModules = $stdModules;
 	}
 	function __toString() { return 'runtime.globals.GlobalModules'; }
 }

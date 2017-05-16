@@ -27,6 +27,9 @@ class parser_nodes_ParseNode {
 	public function getName() {
 		return "";
 	}
+	public function isClass() {
+		return false;
+	}
 	public function isModule() {
 		return false;
 	}

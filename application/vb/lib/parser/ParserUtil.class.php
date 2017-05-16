@@ -475,6 +475,10 @@ class parser_ParserUtil {
 		$tmp = $this->contextStack;
 		$tmp->push(new parser_nodes_BlockNode());
 	}
+	public function pushClassContext($name) {
+		$tmp = $this->contextStack;
+		$tmp->push(new parser_nodes_ClassNode($name));
+	}
 	public function pushIfContext($condition) {
 		$tmp = $this->contextStack;
 		$tmp->push(new parser_nodes_IfNode($condition));

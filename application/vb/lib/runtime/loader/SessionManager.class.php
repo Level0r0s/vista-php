@@ -25,12 +25,12 @@ class runtime_loader_SessionManager {
 		}
 		$stdModules = $storeMap->get("std_modules");
 		if($stdModules !== null) {
-			runtime_globals_GlobalModules::$instance->stdModules = $stdModules;
+			runtime_globals_GlobalModules::setStdModules($stdModules);
 		}
 	}
 	static function storeToMap($storeMap) {
 		$globalDictionary = runtime_globals_GlobalDictionary::$instance->map;
-		$stdModules = runtime_globals_GlobalModules::$instance->stdModules;
+		$stdModules = runtime_globals_GlobalModules::getStdModules();
 		$storeMap->set("global_dictionary", $globalDictionary);
 		$storeMap->set("std_modules", $stdModules);
 	}

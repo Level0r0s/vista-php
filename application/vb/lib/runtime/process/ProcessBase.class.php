@@ -54,7 +54,7 @@ class runtime_process_ProcessBase {
 			$afterAppear = false;
 		}
 		$payload = $object->getId();
-		$payload1 = _hx_anonymous(array("service" => "action", "id" => $payload, "action" => $action, "args" => util_ArrayUtil::normalizeArray($args), "afterAppear" => $afterAppear));
+		$payload1 = _hx_anonymous(array("service" => "action", "id" => $payload, "action" => $action, "args" => util_NormalizeUtil::normalizeArray($args), "afterAppear" => $afterAppear));
 		$this->pushOutput($payload1);
 	}
 	public function callSubroutine($method) {
