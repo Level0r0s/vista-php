@@ -7,7 +7,7 @@ class runtime_functions_ModuleFunctions extends runtime_functions_StdFunctions {
 	}}
 	public function pushStdModule($lit) {
 		$name = Std::string($this->literal($lit));
-		$stdModule = runtime_globals_GlobalModules::getStdModule($name);
+		$stdModule = runtime_globals_GlobalModules::getModule($name);
 		$tmp = (property_exists("haxe_Log", "trace") ? haxe_Log::$trace: array("haxe_Log", "trace"));
 		call_user_func_array($tmp, array("pushStdModule", _hx_anonymous(array("fileName" => "ModuleFunctions.hx", "lineNumber" => 11, "className" => "runtime.functions.ModuleFunctions", "methodName" => "pushStdModule", "customParams" => (new _hx_array(array(Std::string($stdModule))))))));
 		if($stdModule !== null) {

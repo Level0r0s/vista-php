@@ -358,8 +358,9 @@ class parser_Parser extends parser_ParserUtil {
 		if(!$tmp) {
 			return false;
 		}
-		$this->log("end class");
 		$this->advance(2);
+		$node = $this->popContext();
+		$this->addStatement($node);
 		return true;
 	}
 	public function endIfStatement() {
@@ -388,7 +389,6 @@ class parser_Parser extends parser_ParserUtil {
 		}
 		$this->advance(2);
 		$node = $this->popContext();
-		$name = $node->getName();
 		$this->addStatement($node);
 		return true;
 	}

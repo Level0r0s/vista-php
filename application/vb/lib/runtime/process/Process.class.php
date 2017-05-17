@@ -101,27 +101,27 @@ class runtime_process_Process extends runtime_functions_ModuleFunctions {
 			$tmp4 = $this->next();
 			$this->popIntoProperty($tmp4, $this->next());
 		}break;
-		case 19:{
+		case 18:{
 			$this->pushConst($this->next());
 		}break;
-		case 20:{
+		case 19:{
 			$this->pushGlobal($this->next());
+		}break;
+		case 20:{
+			$this->pushStdModule($this->next());
 		}break;
 		case 21:{
 			$tmp5 = $this->next();
 			$this->pushProperty($tmp5, $this->next());
 		}break;
-		case 22:{
-			$this->pushStdModule($this->next());
-		}break;
-		case 24:{
+		case 23:{
 			$tmp6 = $this->next();
 			$this->subDefine($tmp6, $this->next());
 		}break;
-		case 25:{
+		case 24:{
 			$this->subReturn();
 		}break;
-		case 26:{
+		case 25:{
 			$this->times();
 		}break;
 		default:{

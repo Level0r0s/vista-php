@@ -18,7 +18,8 @@ class parser_ParserUtil {
 		return new parser_nodes_CallNode($nameNode, $args);
 	}
 	public function dimNode($nameNode, $type) {
-		return new parser_nodes_DimensionNode($nameNode, $type);
+		$moduleName = $this->moduleName();
+		return new parser_nodes_DimensionNode($moduleName, $nameNode->getName(), $type);
 	}
 	public function errorNode() {
 		$this->tokenizer->setEof();
@@ -439,6 +440,9 @@ class parser_ParserUtil {
 	public function mark() {
 		$this->marks->push($this->tokenIndex);
 	}
+	public function moduleName() {
+		return $this->currentContext()->moduleName();
+	}
 	public function peekToken($n = null) {
 		if($n === null) {
 			$n = 0;
@@ -489,7 +493,8 @@ class parser_ParserUtil {
 	}
 	public function pushSubroutineContext($name) {
 		$tmp = $this->contextStack;
-		$tmp->push(new parser_nodes_SubroutineNode($name));
+		$tmp1 = $this->moduleName();
+		$tmp->push(new parser_nodes_SubroutineNode($tmp1, $name->getName()));
 	}
 	public function pushWhileContext($condition) {
 		$tmp = $this->contextStack;

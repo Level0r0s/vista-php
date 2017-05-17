@@ -28,8 +28,14 @@ class runtime_globals_GlobalDictionary {
 	static function get($name) {
 		return runtime_globals_GlobalDictionary::$instance->getName($name);
 	}
+	static function getMap() {
+		return runtime_globals_GlobalDictionary::$instance->map;
+	}
 	static function set($name, $val) {
 		return runtime_globals_GlobalDictionary::$instance->setName($name, $val);
+	}
+	static function setMap($map) {
+		runtime_globals_GlobalDictionary::$instance->map = $map;
 	}
 	function __toString() { return 'runtime.globals.GlobalDictionary'; }
 }

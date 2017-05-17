@@ -22,9 +22,10 @@ class runtime_functions_StdFunctions extends runtime_functions_UiFunctions {
 		$this->callMemberFn($objectName, $functionName, $args);
 		$this->push($functionName);
 	}
-	public function dimension($lit, $type) {
-		$name = Std::string($this->literal($lit));
-		$obj = runtime_proxies_ProxyManager::ensureProxy($name, $type);
+	public function dimension($moduleLit, $nameLit) {
+		$module = Std::string($this->literal($moduleLit));
+		$name = Std::string($this->literal($nameLit));
+		$obj = runtime_proxies_ProxyManager::ensureProxy($module, $name, null);
 		$this->push($this->queueCreation($obj));
 	}
 	public function dimensionAny($name) {
@@ -105,7 +106,7 @@ class runtime_functions_StdFunctions extends runtime_functions_UiFunctions {
 	}
 	public function pushGlobal($lit) {
 		$name = Std::string($this->literal($lit));
-		$this->push($this->getGlobalName($name));
+		$this->push($this->getObjectName($name));
 	}
 	public function pushProperty($objectLit, $propertyLit) {
 		$objectName = Std::string($this->literal($objectLit));
@@ -114,7 +115,7 @@ class runtime_functions_StdFunctions extends runtime_functions_UiFunctions {
 	}
 	public function subDefine($lit, $start) {
 		$name = Std::string($this->literal($lit));
-		haxe_Log::trace("subDefine", _hx_anonymous(array("fileName" => "StdFunctions.hx", "lineNumber" => 128, "className" => "runtime.functions.StdFunctions", "methodName" => "subDefine", "customParams" => (new _hx_array(array($name))))));
+		haxe_Log::trace("subDefine", _hx_anonymous(array("fileName" => "StdFunctions.hx", "lineNumber" => 129, "className" => "runtime.functions.StdFunctions", "methodName" => "subDefine", "customParams" => (new _hx_array(array($name))))));
 		$this->push($this->setGlobalName($name, $start));
 	}
 	public function subReturn() {

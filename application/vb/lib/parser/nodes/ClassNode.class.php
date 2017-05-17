@@ -6,7 +6,7 @@ class parser_nodes_ClassNode extends parser_nodes_AbstractModuleNode {
 		parent::__construct($name);
 	}}
 	public function generate($bytecodes, $util) {
-		$classModule = runtime_modules_ClassModule::findOrCreate($this->name);
+		$classModule = runtime_modules_Module::findOrCreate($this->name);
 		{
 			$_g = 0;
 			$_g1 = $this->subroutines;
@@ -22,6 +22,9 @@ class parser_nodes_ClassNode extends parser_nodes_AbstractModuleNode {
 	}
 	public function isClass() {
 		return true;
+	}
+	public function moduleName() {
+		return $this->name;
 	}
 	public function toString() {
 		return "ClassNode(" . _hx_string_or_null($this->name) . ")";

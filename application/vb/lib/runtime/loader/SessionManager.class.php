@@ -21,16 +21,16 @@ class runtime_loader_SessionManager {
 	static function restoreFromMap($storeMap) {
 		$globalDictionary = $storeMap->get("global_dictionary");
 		if($globalDictionary !== null) {
-			runtime_globals_GlobalDictionary::$instance->map = $globalDictionary;
+			runtime_globals_GlobalDictionary::setMap($globalDictionary);
 		}
 		$stdModules = $storeMap->get("std_modules");
 		if($stdModules !== null) {
-			runtime_globals_GlobalModules::setStdModules($stdModules);
+			runtime_globals_GlobalModules::setModules($stdModules);
 		}
 	}
 	static function storeToMap($storeMap) {
-		$globalDictionary = runtime_globals_GlobalDictionary::$instance->map;
-		$stdModules = runtime_globals_GlobalModules::getStdModules();
+		$globalDictionary = runtime_globals_GlobalDictionary::getMap();
+		$stdModules = runtime_globals_GlobalModules::getModules();
 		$storeMap->set("global_dictionary", $globalDictionary);
 		$storeMap->set("std_modules", $stdModules);
 	}

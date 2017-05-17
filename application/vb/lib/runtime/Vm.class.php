@@ -22,7 +22,7 @@ class runtime_Vm {
 		return runtime_process_ProcessManager::runMethod($method);
 	}
 	static function runFromSubroutine($id, $type, $moduleName, $subroutineName) {
-		$module = runtime_globals_GlobalModules::getStdModule($moduleName);
+		$module = runtime_globals_GlobalModules::getModule($moduleName);
 		if($module === null) {
 			return "module [" . _hx_string_or_null($moduleName) . "] not found";
 		}

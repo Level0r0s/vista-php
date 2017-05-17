@@ -4,11 +4,9 @@
 class runtime_globals_GlobalModules {
 	public function __construct() {
 		if(!php_Boot::$skip_constructor) {
-		$this->classModules = new haxe_ds_StringMap();
-		$this->stdModules = new haxe_ds_StringMap();
+		$this->modules = new haxe_ds_StringMap();
 	}}
-	public $classModules;
-	public $stdModules;
+	public $modules;
 	public function __call($m, $a) {
 		if(isset($this->$m) && is_callable($this->$m))
 			return call_user_func_array($this->$m, $a);
@@ -24,34 +22,21 @@ class runtime_globals_GlobalModules {
 	static function clearMessages() {
 		runtime_globals_GlobalModules::$messages = (new _hx_array(array()));
 	}
-	static function getClassModule($name) {
-		return runtime_globals_GlobalModules::$instance->classModules->get($name);
+	static function getModule($name) {
+		return runtime_globals_GlobalModules::$instance->modules->get($name);
 	}
-	static function getClassModules() {
-		return runtime_globals_GlobalModules::$instance->classModules;
-	}
-	static function getStdModule($name) {
-		return runtime_globals_GlobalModules::$instance->stdModules->get($name);
-	}
-	static function getStdModules() {
-		return runtime_globals_GlobalModules::$instance->stdModules;
+	static function getModules() {
+		return runtime_globals_GlobalModules::$instance->modules;
 	}
 	static function printMessage($msg) {
 		runtime_globals_GlobalModules::$messages->push($msg);
 	}
-	static function setClassModule($name, $module) {
-		runtime_globals_GlobalModules::$instance->classModules->set($name, $module);
+	static function setModule($name, $module) {
+		runtime_globals_GlobalModules::$instance->modules->set($name, $module);
 		return $module;
 	}
-	static function setClassModules($classModules) {
-		runtime_globals_GlobalModules::$instance->classModules = $classModules;
-	}
-	static function setStdModule($name, $module) {
-		runtime_globals_GlobalModules::$instance->stdModules->set($name, $module);
-		return $module;
-	}
-	static function setStdModules($stdModules) {
-		runtime_globals_GlobalModules::$instance->stdModules = $stdModules;
+	static function setModules($modules) {
+		runtime_globals_GlobalModules::$instance->modules = $modules;
 	}
 	function __toString() { return 'runtime.globals.GlobalModules'; }
 }

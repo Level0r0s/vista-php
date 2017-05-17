@@ -13,7 +13,7 @@ class runtime_functions_Builtins extends runtime_process_ProcessBase {
 		}
 	}
 	public function callModuleFn($objectName, $fnName, $args) {
-		$module = runtime_globals_GlobalModules::getStdModule($objectName);
+		$module = runtime_globals_GlobalModules::getModule($objectName);
 		if($module === null) {
 			return $this->callObjectFn($objectName, $fnName, $args);
 		}
@@ -62,7 +62,10 @@ class runtime_functions_Builtins extends runtime_process_ProcessBase {
 		return $val;
 	}
 	public function getObjectName($name) {
-		$val = $this->getGlobalName($name);
+		$val = $this->currentContext->getProxy($name);
+		if($val === null) {
+			$val = $this->getGlobalName($name);
+		}
 		if(Std::is($val, _hx_qtype("runtime.proxies.QkObject"))) {
 			return $val;
 		} else {

@@ -9,6 +9,7 @@ class compiler_CompiledMethod {
 	}}
 	public $bytecodes;
 	public $literals;
+	public $module;
 	public $src;
 	public function toString() {
 		$s1 = Std::string($this->bytecodes);

@@ -6,7 +6,7 @@ class parser_nodes_StdModuleNode extends parser_nodes_AbstractModuleNode {
 		parent::__construct($name);
 	}}
 	public function generate($bytecodes, $util) {
-		$stdModule = runtime_modules_StdModule::findOrCreate($this->name);
+		$module = runtime_modules_Module::findOrCreate($this->name);
 		{
 			$_g = 0;
 			$_g1 = $this->subroutines;
@@ -15,10 +15,13 @@ class parser_nodes_StdModuleNode extends parser_nodes_AbstractModuleNode {
 				$_g = $_g + 1;
 				$compiledMethod = $sub->compile();
 				$methodName = $sub->name;
-				$stdModule->addMethod($methodName, $compiledMethod);
+				$module->addMethod($methodName, $compiledMethod);
 				unset($sub,$methodName,$compiledMethod);
 			}
 		}
+	}
+	public function moduleName() {
+		return $this->name;
 	}
 	public function toString() {
 		return "StdModuleNode(" . _hx_string_or_null($this->name) . ")";

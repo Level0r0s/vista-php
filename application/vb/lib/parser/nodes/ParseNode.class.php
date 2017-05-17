@@ -36,6 +36,9 @@ class parser_nodes_ParseNode {
 	public function isSubroutine() {
 		return false;
 	}
+	public function moduleName() {
+		return "none";
+	}
 	public function toString() {
 		return "a ParseNode";
 	}
