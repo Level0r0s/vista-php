@@ -8,10 +8,10 @@ class runtime_proxies_ProxyManager {
 			$type = 0;
 		}
 		$module = runtime_modules_Module::findOrCreate($moduleName);
-		$obj = $module->getProxy($name);
+		$obj = $module->asInstance()->getProxy($name);
 		if($obj === null) {
 			$obj = runtime_proxies_ProxyManager::dimensionType($name, $type);
-			$module->setProxy($name, $obj);
+			$module->asInstance()->setProxy($name, $obj);
 		}
 		return $obj;
 	}

@@ -486,6 +486,14 @@ class parser_Parser extends parser_ParserUtil {
 		$this->pushStdModuleContext($name);
 		return true;
 	}
+	public function msgBoxStatement() {
+		if(!$this->isBuiltinFn("msgbox")) {
+			return false;
+		}
+		$tmp = $this->nameNode();
+		$this->addStatement($this->callNode($tmp, (new _hx_array(array($this->expression())))));
+		return true;
+	}
 	public function onGoSubStatement() {
 		return false;
 	}
@@ -521,23 +529,29 @@ class parser_Parser extends parser_ParserUtil {
 		$tmp2 = null;
 		$tmp3 = null;
 		$tmp4 = null;
+		$tmp5 = null;
 		if(!$this->classStatement()) {
-			$tmp4 = $this->endClassStatement();
+			$tmp5 = $this->endClassStatement();
+		} else {
+			$tmp5 = true;
+		}
+		if(!$tmp5) {
+			$tmp4 = $this->endModuleStatement();
 		} else {
 			$tmp4 = true;
 		}
 		if(!$tmp4) {
-			$tmp3 = $this->endModuleStatement();
+			$tmp3 = $this->endSubroutineStatement();
 		} else {
 			$tmp3 = true;
 		}
 		if(!$tmp3) {
-			$tmp2 = $this->endSubroutineStatement();
+			$tmp2 = $this->moduleStatement();
 		} else {
 			$tmp2 = true;
 		}
 		if(!$tmp2) {
-			$tmp1 = $this->moduleStatement();
+			$tmp1 = $this->msgBoxStatement();
 		} else {
 			$tmp1 = true;
 		}
@@ -665,6 +679,10 @@ class parser_Parser extends parser_ParserUtil {
 		return $termNode;
 	}
 	public function expression() {
+		$newNode = $this->newExpression();
+		if($newNode !== null) {
+			return $newNode;
+		}
 		$conditionNode = $this->conditionExpression();
 		while($this->isComparison(null)) {
 			$conditionNode1 = $this->consumeTokenType();
@@ -739,6 +757,26 @@ class parser_Parser extends parser_ParserUtil {
 			$value = $this->expression();
 		}
 		return new parser_nodes_MemberPropertyNode($objectName, $propertyName, $value);
+	}
+	public function newExpression() {
+		$tmp = null;
+		if($this->isNew(null)) {
+			$tmp = $this->isName(1);
+		} else {
+			$tmp = false;
+		}
+		if(!$tmp) {
+			return null;
+		}
+		$this->advance(null);
+		$name = $this->nameNode();
+		if(!$this->consumeType(constants_TokenType::$Lp)) {
+			return null;
+		}
+		if(!$this->consumeType(constants_TokenType::$Rp)) {
+			return $this->errorNode();
+		}
+		return new parser_nodes_NewNode($name->getName());
 	}
 	public function number() {
 		$expression = $this->integerLiteralExpression();
@@ -824,7 +862,7 @@ class parser_Parser extends parser_ParserUtil {
 		}
 	}
 	public function log($msg) {
-		$tmp = new parser_nodes_NameNode("print");
+		$tmp = new parser_nodes_VariableNode("print");
 		$tmp1 = $this->callNode($tmp, (new _hx_array(array(new parser_nodes_LiteralNode($msg)))));
 		$this->addStatement($tmp1);
 	}

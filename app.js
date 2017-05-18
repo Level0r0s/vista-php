@@ -34,7 +34,7 @@ var Main = function () {
 exports.Main = Main;
 applib.Application.startupFunction = Main.run;
 
-},{"./ui/viewport/viewport":63}],3:[function(require,module,exports){
+},{"./ui/viewport/viewport":64}],3:[function(require,module,exports){
 "use strict";
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -997,6 +997,7 @@ var hsplit_pane_1 = require("../ui/splitpane/hsplit_pane");
 var menu_button_1 = require("../ui/widgets/menu_button");
 var menu_bar_button_1 = require("../ui/widgets/menu_bar_button");
 var monaco_editor_1 = require("../ui/widgets/iframe/monaco_editor");
+var msg_box_1 = require("../ui/windows/tools/msg_box");
 var paper_1 = require("../ui/widgets/iframe/paper");
 var simple_button_bar_1 = require("../ui/widgets/simple_button_bar");
 var tab_page_1 = require("../ui/tabview/tab_page");
@@ -1093,6 +1094,8 @@ var ServiceManager = function () {
                     return this.service_create(reply.args);
                 case 'handle':
                     return this.service_handle(reply);
+                case 'msgbox':
+                    return this.service_msgbox(reply.args);
                 case 'print':
                     return this.service_print(reply.args);
                 default:
@@ -1293,6 +1296,14 @@ var ServiceManager = function () {
             this.setProxy(id, window);
         }
     }, {
+        key: "service_msgbox",
+        value: function service_msgbox(args) {
+            var msg = args.msg;
+            var msgbox = new msg_box_1.MsgBox(msg);
+            msgbox.show();
+            return null;
+        }
+    }, {
         key: "service_print",
         value: function service_print(args) {
             if (basic_manager_1.BasicManager.workspace != null && args.msg != null) basic_manager_1.BasicManager.workspace.print(args.msg);
@@ -1310,7 +1321,7 @@ var ServiceManager = function () {
 
 exports.ServiceManager = ServiceManager;
 
-},{"../api/api":3,"../managers/basic_manager":16,"../ui/splitpane/hsplit_pane":24,"../ui/splitpane/vsplit_pane":26,"../ui/tabview/tab_page":27,"../ui/tabview/tab_view":28,"../ui/widgets/button":36,"../ui/widgets/iframe/monaco_editor":49,"../ui/widgets/iframe/paper":50,"../ui/widgets/iframe/tinymce":51,"../ui/widgets/menu_bar_button":52,"../ui/widgets/menu_button":53,"../ui/widgets/simple_button_bar":55,"../ui/windows/abstract_window":57}],20:[function(require,module,exports){
+},{"../api/api":3,"../managers/basic_manager":16,"../ui/splitpane/hsplit_pane":24,"../ui/splitpane/vsplit_pane":26,"../ui/tabview/tab_page":27,"../ui/tabview/tab_view":28,"../ui/widgets/button":36,"../ui/widgets/iframe/monaco_editor":49,"../ui/widgets/iframe/paper":50,"../ui/widgets/iframe/tinymce":51,"../ui/widgets/menu_bar_button":52,"../ui/widgets/menu_button":53,"../ui/widgets/simple_button_bar":55,"../ui/windows/abstract_window":57,"../ui/windows/tools/msg_box":62}],20:[function(require,module,exports){
 /// <reference path="../types/qooxdoo.d.ts" />
 "use strict";
 
@@ -4124,6 +4135,111 @@ var SettingsWindow = function (_abstract_form_window) {
 exports.SettingsWindow = SettingsWindow;
 
 },{"../abstract_form_window":58}],62:[function(require,module,exports){
+/// <reference path="../../../types/qooxdoo.d.ts" />
+"use strict";
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var button_type_1 = require("../../../constants/button_type");
+var Composite = qx.ui.container.Composite;
+var HBox = qx.ui.layout.HBox;
+var Label = qx.ui.basic.Label;
+var Widget = qx.ui.core.Widget;
+var abstract_window_1 = require("../abstract_window");
+var button_1 = require("../../widgets/button");
+
+var MsgBox = function (_abstract_window_1$Ab) {
+    _inherits(MsgBox, _abstract_window_1$Ab);
+
+    function MsgBox(msg) {
+        _classCallCheck(this, MsgBox);
+
+        var _this = _possibleConstructorReturn(this, (MsgBox.__proto__ || Object.getPrototypeOf(MsgBox)).call(this));
+
+        _this.msg = null;
+        _this.msg = msg;
+        _this.addContent();
+        return _this;
+    }
+
+    _createClass(MsgBox, [{
+        key: "addContent",
+        value: function addContent() {
+            if (this.msg == null) return;
+            this.addLabel(this.msg);
+            this.addButtonBar();
+        }
+    }, {
+        key: "addButtonBar",
+        value: function addButtonBar() {
+            var _this2 = this;
+
+            var fn = function fn() {
+                _this2.close();
+            };
+            var btn = new button_1.Button('Ok', fn, null, button_type_1.default.Info);
+            btn.setWidth(75);
+            var buttons = new Composite(new HBox());
+            buttons.setHeight(35);
+            var filler = new Widget();
+            buttons.setPaddingLeft(10);
+            buttons.setPaddingRight(10);
+            buttons.setPaddingTop(2);
+            buttons.setPaddingBottom(2);
+            buttons.add(filler, { flex: 1 });
+            buttons.add(btn);
+            this.add(buttons, { edge: 'south' });
+        }
+    }, {
+        key: "addLabel",
+        value: function addLabel(text) {
+            var html = "<span style=\"text-align:center;font-weight:bold;font-size:1.2em;padding:15px;\">" + text + "</span><br>";
+            var label = new Label().set({
+                value: html,
+                rich: true
+            });
+            this.add(label, { edge: 'center' });
+        }
+    }, {
+        key: "getDefaultCentered",
+        value: function getDefaultCentered() {
+            return true;
+        }
+    }, {
+        key: "getDefaultHeight",
+        value: function getDefaultHeight() {
+            return 275;
+        }
+    }, {
+        key: "getDefaultModal",
+        value: function getDefaultModal() {
+            return true;
+        }
+    }, {
+        key: "getDefaultWidth",
+        value: function getDefaultWidth() {
+            return 375;
+        }
+    }, {
+        key: "getWindowCaption",
+        value: function getWindowCaption() {
+            return 'Message Box';
+        }
+    }]);
+
+    return MsgBox;
+}(abstract_window_1.AbstractWindow);
+
+exports.MsgBox = MsgBox;
+
+},{"../../../constants/button_type":6,"../../widgets/button":36,"../abstract_window":57}],63:[function(require,module,exports){
 "use strict";
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -4185,7 +4301,7 @@ var Navpanel = function (_abstract_navpanel_1$) {
 
 exports.Navpanel = Navpanel;
 
-},{"../../../qkwidgets/ui/viewport/navpanel/abstract_navpanel":34,"../../windows/iframe/workspace_window":64,"../../windows/tools/class_browser_window":65,"../../windows/tools/script_browser_window":66}],63:[function(require,module,exports){
+},{"../../../qkwidgets/ui/viewport/navpanel/abstract_navpanel":34,"../../windows/iframe/workspace_window":65,"../../windows/tools/class_browser_window":66,"../../windows/tools/script_browser_window":67}],64:[function(require,module,exports){
 "use strict";
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -4227,7 +4343,7 @@ var Viewport = function (_abstract_viewport_1$) {
 
 exports.Viewport = Viewport;
 
-},{"../../constants/app_constants":1,"../../qkwidgets/ui/viewport/abstract_viewport":29,"./navpanel/navpanel":62}],64:[function(require,module,exports){
+},{"../../constants/app_constants":1,"../../qkwidgets/ui/viewport/abstract_viewport":29,"./navpanel/navpanel":63}],65:[function(require,module,exports){
 /// <reference path="../../../qkwidgets/types/qooxdoo.d.ts" />
 "use strict";
 
@@ -4347,7 +4463,7 @@ var WorkspaceWindow = function (_abstract_window_1$Ab) {
 
 exports.WorkspaceWindow = WorkspaceWindow;
 
-},{"../../../qkwidgets/managers/basic_manager":16,"../../../qkwidgets/ui/splitpane/hsplit_pane":24,"../../../qkwidgets/ui/widgets/basic_button_bar":35,"../../../qkwidgets/ui/widgets/fields/text_area":42,"../../../qkwidgets/ui/widgets/iframe/monaco_editor":49,"../../../qkwidgets/ui/windows/abstract_window":57}],65:[function(require,module,exports){
+},{"../../../qkwidgets/managers/basic_manager":16,"../../../qkwidgets/ui/splitpane/hsplit_pane":24,"../../../qkwidgets/ui/widgets/basic_button_bar":35,"../../../qkwidgets/ui/widgets/fields/text_area":42,"../../../qkwidgets/ui/widgets/iframe/monaco_editor":49,"../../../qkwidgets/ui/windows/abstract_window":57}],66:[function(require,module,exports){
 /// <reference path='../../../qkwidgets/types/qooxdoo.d.ts' />
 "use strict";
 
@@ -4445,7 +4561,7 @@ var ClassBrowserWindow = function (_abstract_window_1$Ab) {
 
 exports.ClassBrowserWindow = ClassBrowserWindow;
 
-},{"../../../qkwidgets/managers/basic_manager":16,"../../../qkwidgets/ui/widgets/class_browser_button_bar":37,"../../../qkwidgets/ui/widgets/tree_widget":56,"../../../qkwidgets/ui/windows/abstract_window":57}],66:[function(require,module,exports){
+},{"../../../qkwidgets/managers/basic_manager":16,"../../../qkwidgets/ui/widgets/class_browser_button_bar":37,"../../../qkwidgets/ui/widgets/tree_widget":56,"../../../qkwidgets/ui/windows/abstract_window":57}],67:[function(require,module,exports){
 /// <reference path='../../../qkwidgets/types/qooxdoo.d.ts' />
 "use strict";
 

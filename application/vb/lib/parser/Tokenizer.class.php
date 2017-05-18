@@ -105,6 +105,9 @@ class parser_Tokenizer extends util_ReadStream {
 		case "module":{
 			return $this->createToken($lcval, constants_TokenType::$KwModule);
 		}break;
+		case "new":{
+			return $this->createToken($lcval, constants_TokenType::$KwNew);
+		}break;
 		case "public":{
 			return $this->createToken($lcval, constants_TokenType::$KwPublic);
 		}break;

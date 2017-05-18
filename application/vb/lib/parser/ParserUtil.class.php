@@ -32,7 +32,10 @@ class parser_ParserUtil {
 		return new parser_nodes_LiteralNode($this->consumeToken()->val);
 	}
 	public function nameNode() {
-		return new parser_nodes_NameNode($this->consumeValue());
+		return new parser_nodes_VariableNode($this->consumeValue());
+	}
+	public function newNode() {
+		return new parser_nodes_NewNode($this->consumeValue());
 	}
 	public function addStatement($statement) {
 		$this->currentContext()->addStmt($statement);
@@ -351,6 +354,12 @@ class parser_ParserUtil {
 			$n = 0;
 		}
 		return $this->isType(constants_TokenType::$Id, $n);
+	}
+	public function isNew($n = null) {
+		if($n === null) {
+			$n = 0;
+		}
+		return $this->isType(constants_TokenType::$KwNew, $n);
 	}
 	public function isNewline($n = null) {
 		if($n === null) {

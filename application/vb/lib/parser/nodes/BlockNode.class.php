@@ -28,7 +28,7 @@ class parser_nodes_BlockNode extends parser_nodes_ParseNode {
 			$stmt = $this->stmts[$i];
 			$stmt->generate($bytecodes, $util);
 			if($i < $this->stmts->length - 1) {
-				$bytecodes->push(15);
+				$bytecodes->push(16);
 			}
 			unset($stmt,$i);
 		}

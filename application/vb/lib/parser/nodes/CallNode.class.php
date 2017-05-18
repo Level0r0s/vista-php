@@ -5,7 +5,7 @@ class parser_nodes_CallNode extends parser_nodes_ParseNode {
 	public function __construct($name, $args = null) {
 		if(!php_Boot::$skip_constructor) {
 		parent::__construct();
-		$this->name = $name->unsetGlobal();
+		$this->name = $name->unsetEmitValue();
 		$tmp = null;
 		if($args !== null) {
 			$tmp = $args;

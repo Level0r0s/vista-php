@@ -12,28 +12,28 @@ class runtime_modules_Module {
 			$tmp = (new _hx_array(array()));
 		}
 		$this->propertyNames = $tmp;
+		$this->instance = $this->createInstance();
 		$this->methodCache = new haxe_ds_StringMap();
 		$this->methodDict = new haxe_ds_StringMap();
-		$this->proxies = new haxe_ds_StringMap();
 	}}
+	public $instance;
 	public $methodCache;
 	public $methodDict;
 	public $name;
 	public $propertyNames;
-	public $proxies;
 	public function addMethod($name, $method) {
 		$method->module = $this->name;
 		$this->methodDict->set($name, $method);
 		$this->resolveHandler($name);
 	}
+	public function asInstance() {
+		return $this->instance;
+	}
+	public function createInstance() {
+		return new runtime_modules_ModuleInstance($this->name);
+	}
 	public function getMethod($name) {
 		return $this->methodDict->get($name);
-	}
-	public function getProxy($name) {
-		return $this->proxies->get($name);
-	}
-	public function setProxy($name, $proxy) {
-		$this->proxies->set($name, $proxy);
 	}
 	public function toString() {
 		return "Module(" . _hx_string_or_null($this->name) . ")";
@@ -44,7 +44,7 @@ class runtime_modules_Module {
 			return;
 		}
 		$objectName = $nameEvent->get("name");
-		$object = $this->getProxy($objectName);
+		$object = $this->instance->getProxy($objectName);
 		$eventName = $nameEvent->get("event");
 		$subName = $nameEvent->get("sub");
 		if($object !== null) {

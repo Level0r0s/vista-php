@@ -16,17 +16,20 @@ class constants_Opcode {
 	static $Lte = 11;
 	static $Minus = 12;
 	static $Neq = 13;
-	static $Plus = 14;
-	static $Pop = 15;
-	static $PopIntoGlobal = 16;
-	static $PopIntoProperty = 17;
-	static $PushConst = 18;
-	static $PushGlobal = 19;
-	static $PushModule = 20;
-	static $PushProperty = 21;
-	static $SubCall = 22;
-	static $SubDefine = 23;
-	static $SubReturn = 24;
-	static $Times = 25;
+	static $hNew = 14;
+	static $Plus = 15;
+	static $Pop = 16;
+	static $PopIntoInstanceVar = 17;
+	static $PopIntoGlobalVar = 18;
+	static $PopIntoProperty = 19;
+	static $PushConst = 20;
+	static $PushInstanceVar = 21;
+	static $PushGlobalVar = 22;
+	static $PushModule = 23;
+	static $PushProperty = 24;
+	static $SubCall = 25;
+	static $SubDefine = 26;
+	static $SubReturn = 27;
+	static $Times = 28;
 	function __toString() { return 'constants.Opcode'; }
 }

@@ -76,6 +76,9 @@ class runtime_process_ProcessBase {
 	public function log($msg) {
 		$this->printOutput($msg);
 	}
+	public function msgBoxOutput($msg) {
+		$this->serviceOutput("msgbox", _hx_anonymous(array("msg" => $msg)));
+	}
 	public function pop() {
 		return $this->stack->pop();
 	}

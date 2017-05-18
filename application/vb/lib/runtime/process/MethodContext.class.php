@@ -17,7 +17,15 @@ class runtime_process_MethodContext extends runtime_process_Context {
 			return null;
 		}
 		$module = runtime_globals_GlobalModules::getModule($this->compiledMethod->module);
-		return $module->getProxy($name);
+		return $module->asInstance()->getProxy($name);
+	}
+	public function setProxy($name, $val) {
+		if($this->compiledMethod->module === null) {
+			return null;
+		}
+		$module = runtime_globals_GlobalModules::getModule($this->compiledMethod->module);
+		$module->asInstance()->setProxy($name, $val);
+		return $name;
 	}
 	public function __call($m, $a) {
 		if(isset($this->$m) && is_callable($this->$m))

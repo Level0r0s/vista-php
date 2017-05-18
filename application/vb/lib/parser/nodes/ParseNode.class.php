@@ -30,6 +30,9 @@ class parser_nodes_ParseNode {
 	public function isClass() {
 		return false;
 	}
+	public function isGlobal() {
+		return false;
+	}
 	public function isModule() {
 		return false;
 	}
@@ -42,7 +45,7 @@ class parser_nodes_ParseNode {
 	public function toString() {
 		return "a ParseNode";
 	}
-	public function unsetGlobal() {
+	public function unsetEmitValue() {
 		return $this;
 	}
 	function __toString() { return $this->toString(); }

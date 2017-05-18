@@ -5,67 +5,69 @@ class runtime_functions_Builtins extends runtime_process_ProcessBase {
 	public function __construct($methodContext) { if(!php_Boot::$skip_constructor) {
 		parent::__construct($methodContext);
 	}}
-	public function callMemberFn($objectName, $fnName, $args) {
-		if(util_StringUtil::isGlobal($objectName)) {
-			return $this->callModuleFn($objectName, $fnName, $args);
+	public function callMemberFn($varName, $fnName, $args) {
+		if(util_StringUtil::isGlobal($varName)) {
+			return $this->callGlobalFn($varName, $fnName, $args);
 		} else {
-			return $this->callObjectFn($objectName, $fnName, $args);
+			return $this->callLocalFn($varName, $fnName, $args);
 		}
 	}
-	public function callModuleFn($objectName, $fnName, $args) {
-		$module = runtime_globals_GlobalModules::getModule($objectName);
+	public function callGlobalFn($globalName, $fnName, $args) {
+		$instance = null;
+		$module = runtime_globals_GlobalModules::getModule($globalName);
 		if($module === null) {
-			return $this->callObjectFn($objectName, $fnName, $args);
+			$val = $this->getGlobalVar($globalName);
+			if(Std::is($val, _hx_qtype("runtime.modules.ModuleInstance"))) {
+				$instance = $val;
+			} else {
+				return "global " . _hx_string_or_null($globalName) . " not found";
+			}
+		} else {
+			$instance = $module->asInstance();
 		}
-		$method = $module->getMethod($fnName);
+		$method = $instance->getMethod($fnName);
 		if($method === null) {
 			return "method " . _hx_string_or_null($fnName) . " not found";
 		}
 		$this->callSubroutine($method);
-		return $objectName;
+		return $globalName;
 	}
-	public function callObjectFn($objectName, $fnName, $args) {
+	public function callLocalFn($localName, $fnName, $args) {
 		$map = new haxe_ds_StringMap();
-		$object = $this->getObjectName($objectName);
+		$object = $this->getLocalVar($localName);
 		if($object !== null) {
 			$object->callFn($fnName, $args, $map);
 			$args1 = $map->get("args");
 			$this->actionOutput($object, $map->get("action"), $args1, true);
 			return $fnName;
 		} else {
-			return "object " . _hx_string_or_null($objectName) . " not found";
+			return "object " . _hx_string_or_null($localName) . " not found";
 		}
-	}
-	public function callSub($name) {
-		$subEntry = $this->getGlobalName($name);
-		if(!Std::is($subEntry, _hx_qtype("Int"))) {
-			return $name;
-		}
-		$this->pushReturn();
-		$this->hgoto($subEntry);
-		return $name;
 	}
 	public function fnCall($lit, $nargs) {
 		$nstack = $this->stackSize();
 		$name = Std::string($this->literal($lit));
 		$val = null;
-		if($name === "print") {
+		switch($name) {
+		case "msgbox":{
+			$val = $this->msgbox();
+		}break;
+		case "print":{
 			$val = $this->hprint($nargs);
-		} else {
-			$val = $this->callSub($name);
+		}break;
+		default:{
+			$val = "unknown function " . _hx_string_or_null($name);
+		}break;
 		}
 		$this->popn($nstack - $nargs);
 		$this->push($val);
 	}
-	public function getGlobalName($name) {
+	public function getGlobalVar($name) {
 		$val = runtime_globals_GlobalDictionary::get($name);
 		return $val;
 	}
-	public function getObjectName($name) {
+	public function getLocalVar($name) {
 		$val = $this->currentContext->getProxy($name);
-		if($val === null) {
-			$val = $this->getGlobalName($name);
-		}
 		if(Std::is($val, _hx_qtype("runtime.proxies.QkObject"))) {
 			return $val;
 		} else {
@@ -73,12 +75,17 @@ class runtime_functions_Builtins extends runtime_process_ProcessBase {
 		}
 	}
 	public function getPropertyNames($objectName, $propertyName) {
-		$object = $this->getObjectName($objectName);
+		$object = $this->getLocalVar($objectName);
 		if($object !== null) {
 			return $object->getProperty($propertyName);
 		} else {
 			return "object " . _hx_string_or_null($objectName) . " not found";
 		}
+	}
+	public function msgbox() {
+		$msg = Std::string($this->pop());
+		$this->msgBoxOutput($msg);
+		return "msgbox";
 	}
 	public function hprint($nargs) {
 		{
@@ -93,13 +100,16 @@ class runtime_functions_Builtins extends runtime_process_ProcessBase {
 		}
 		return "print " . _hx_string_rec($nargs, "");
 	}
-	public function setGlobalName($name, $val) {
+	public function setLocalVar($name, $val) {
+		return $this->currentContext->setProxy($name, $val);
+	}
+	public function setGlobalVar($name, $val) {
 		runtime_globals_GlobalDictionary::set($name, $val);
 		return $val;
 	}
 	public function setPropertyNames($objectName, $propertyName, $val) {
 		$map = new haxe_ds_StringMap();
-		$object = $this->getObjectName($objectName);
+		$object = $this->getLocalVar($objectName);
 		if($object !== null) {
 			$object->setProperty($propertyName, $val, $map);
 			$args = (new _hx_array(array($map->get("args"))));

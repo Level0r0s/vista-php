@@ -9,7 +9,7 @@ class parser_nodes_LiteralNode extends parser_nodes_ParseNode {
 	}}
 	public $val;
 	public function generate($bytecodes, $util) {
-		$bytecodes->push(18);
+		$bytecodes->push(20);
 		$bytecodes->push($util->encodeLiteral($this->val));
 	}
 	public function toString() {
